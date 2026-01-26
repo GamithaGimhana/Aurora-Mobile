@@ -1,9 +1,16 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
+// 1
+// @ts-ignore - ignore firebase typescript issue for react native
+import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
+// 2
+import { getFirestore } from 'firebase/firestore';
+// 3
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
+// web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,4 +21,18 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app =
+  getApps().length === 0
+    ? initializeApp(firebaseConfig)
+    : getApp();
+
+// Authentication 
+export const auth =
+  getApps().length === 0
+    ? initializeAuth(app, {
+        persistence: getReactNativePersistence(AsyncStorage),
+      })
+    : getAuth(app);
+
+// Firestore 
+export const db = getFirestore(app);
