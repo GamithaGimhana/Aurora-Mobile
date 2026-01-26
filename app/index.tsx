@@ -1,8 +1,8 @@
 import React from 'react'
 import "./global.css"
-import { Text, View } from "react-native";
+import { View, Text } from 'react-native'
 
-export default function index() {
+const index = () => {
   return (
     <View className="flex-1 items-center justify-center bg-white">
       <Text className="text-xl font-bold text-blue-500">
@@ -11,3 +11,5 @@ export default function index() {
     </View>
   )
 }
+
+export default index
