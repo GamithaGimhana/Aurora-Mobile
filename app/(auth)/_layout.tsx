@@ -6,6 +6,7 @@ const AuthLayout = () => {
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
+        contentStyle: { flex: 1 },
       }}
     >
       <Stack.Screen name="login" />

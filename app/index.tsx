@@ -1,15 +1,26 @@
-import { Redirect } from "expo-router";
-import { ActivityIndicator, View, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Redirect } from "expo-router"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
+import { ActivityIndicator, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
-const Index = () => {
-  const user = false; 
+export default function Index() {
+  const { isAuthenticated, loading } = useAppSelector(
+    state => state.auth
+  )
 
-  if (!user) {
-    return <Redirect href="/(auth)/login" />;
-  } else {
-    return <Redirect href="/(dashboard)/home" />;
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-white">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaView>
+    )
   }
-};
 
-export default Index;
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />
+  }
+
+  return <Redirect href="/(dashboard)/home" />
+}

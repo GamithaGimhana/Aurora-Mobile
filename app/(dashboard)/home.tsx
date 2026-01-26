@@ -1,12 +1,9 @@
-import React from "react";
-import { View, Text } from "react-native";
+import { Text } from 'react-native'
+import { useAppSelector } from '@/src/hooks/useAppSelector'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-const Home = () => {
-  return (
-    <View className="flex-1 justify-center items-center bg-slate-50">
-      <Text className="text-3xl font-bold">Home Dashboard</Text>
-    </View>
-  );
-};
+export default function Home() {
+  const auth = useAppSelector(state => state.auth)
 
-export default Home;
+  return <SafeAreaView className="flex-1 justify-center items-center bg-white"><Text>{JSON.stringify(auth)}</Text></SafeAreaView>
+}

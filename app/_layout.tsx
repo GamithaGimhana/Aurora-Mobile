@@ -1,22 +1,14 @@
-import React from "react";
-import { Slot } from "expo-router";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { View } from "react-native";
-import { store } from "@/src/redux/store";
-import { Provider } from "react-redux";
+import { Slot } from "expo-router"
+import { Provider } from "react-redux"
+import { store } from "@/src/redux/store"
+import { SafeAreaProvider } from "react-native-safe-area-context"
 
-const RootLayout = () => {
+export default function RootLayout() {
   return (
-    <Provider store={store}>
-      <SafeAreaProvider>
-        <SafeAreaView className="flex-1 bg-white">
-          <View className="flex-1">
-            <Slot />
-          </View>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </Provider>
-  );
-};
-
-export default RootLayout;
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <Slot />
+      </Provider>
+    </SafeAreaProvider>
+  )
+}

@@ -13,7 +13,7 @@ interface AuthState {
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  loading: true, // important for auth bootstrapping
+  loading: false, // important for auth bootstrapping
 }
 
 const authSlice = createSlice({
