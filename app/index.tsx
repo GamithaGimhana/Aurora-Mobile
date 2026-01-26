@@ -1,15 +1,15 @@
-import React from 'react'
-import "./global.css"
-import { View, Text } from 'react-native'
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const index = () => {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">
-        Welcome to Aurora!
-      </Text>
-    </View>
-  )
-}
+const Index = () => {
+  const user = false; 
 
-export default index
+  if (!user) {
+    return <Redirect href="/(auth)/login" />;
+  } else {
+    return <Redirect href="/(dashboard)/home" />;
+  }
+};
+
+export default Index;
