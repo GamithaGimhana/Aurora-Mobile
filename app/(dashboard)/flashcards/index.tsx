@@ -1,12 +1,12 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from "react";
+import { View, Text } from "react-native";
 
-const index = () => {
+const Flashcards = () => {
   return (
-    <View>
-      <Text>index</Text>
+    <View className="flex-1 justify-center items-center bg-slate-50">
+      <Text className="text-3xl font-bold">Flashcards List</Text>
     </View>
-  )
-}
+  );
+};
 
-export default index
+export default Flashcards;

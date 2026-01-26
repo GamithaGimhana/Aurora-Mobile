@@ -1,12 +1,12 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from "react";
+import { View, Text } from "react-native";
 
-const form = () => {
+const NotesForm = () => {
   return (
-    <View>
-      <Text>form</Text>
+    <View className="flex-1 justify-center items-center bg-slate-50">
+      <Text className="text-3xl font-bold">Add/Edit Note</Text>
     </View>
-  )
-}
+  );
+};
 
-export default form
+export default NotesForm;
