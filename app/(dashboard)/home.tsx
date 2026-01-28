@@ -1,6 +1,6 @@
 import { Text } from 'react-native'
 import { useAppSelector } from '@/src/hooks/useAppSelector'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function Home() {
   const auth = useAppSelector(state => state.auth)
