@@ -2,11 +2,19 @@ import { createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPasswo
 import { auth, db } from './firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setUser } from "@/src/redux/slices/authSlice"
+
+// authService.ts
+export const mapFirebaseUser = (user: any) => ({
+  uid: user.uid,
+  email: user.email,
+  name: user.displayName,
+})
 
 // Register
 export const registerUser = async (fullName: string, email: string, password: string) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  await updateProfile(userCredential.user, { displayName: fullName });
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+  await updateProfile(userCredential.user, { displayName: fullName })
 
   await setDoc(doc(db, 'users', userCredential.user.uid), {
     uid: userCredential.user.uid,
@@ -14,16 +22,16 @@ export const registerUser = async (fullName: string, email: string, password: st
     email,
     role: 'user',
     createdAt: new Date(),
-  });
+  })
 
-  return userCredential.user;
-};
+  return mapFirebaseUser(userCredential.user)
+}
 
 // Login
 export const loginUser = async (email: string, password: string) => {
-  const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  return userCredential.user;
-};
+  const userCredential = await signInWithEmailAndPassword(auth, email, password)
+  return mapFirebaseUser(userCredential.user)
+}
 
 // Logout
 export const logoutUser = async () => {
@@ -33,6 +41,7 @@ export const logoutUser = async () => {
 };
 
 // Firebase listener (used in _layout)
+// authService.ts
 export const subscribeToAuthChanges = (callback: (user: any) => void) => {
-  return onAuthStateChanged(auth, callback);
-};
+  return onAuthStateChanged(auth, callback)
+}

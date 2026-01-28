@@ -1,12 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { loginUser, registerUser, logoutUser } from '@/src/services/authService'
+import { AuthUser } from '@/src/types/AuthUser'
 
 interface AuthState {
-  user: null | {
-    uid: string
-    email: string | null
-    name?: string | null
-  }
+  user: AuthUser | null
   isAuthenticated: boolean
   loading: boolean
   error: string | null
@@ -16,26 +13,25 @@ const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   loading: true,
-  error: null
+  error: null,
 }
 
-// Async thunks
-export const loginThunk = createAsyncThunk(
+export const loginThunk = createAsyncThunk<AuthUser, { email: string; password: string }>(
   'auth/login',
-  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      return await loginUser(email, password)
+      return await loginUser(payload.email, payload.password)
     } catch (err: any) {
       return rejectWithValue(err.message)
     }
   }
 )
 
-export const registerThunk = createAsyncThunk(
+export const registerThunk = createAsyncThunk<AuthUser, { fullName: string; email: string; password: string }>(
   'auth/register',
-  async ({ fullName, email, password }: { fullName: string; email: string; password: string }, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      return await registerUser(fullName, email, password)
+      return await registerUser(payload.fullName, payload.email, payload.password)
     } catch (err: any) {
       return rejectWithValue(err.message)
     }
@@ -50,7 +46,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser(state, action) {
+    setUser(state, action: PayloadAction<AuthUser | null>) {
       state.user = action.payload
       state.isAuthenticated = !!action.payload
       state.loading = false
@@ -59,7 +55,7 @@ const authSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(loginThunk.pending, state => { state.loading = true; state.error = null })
+      .addCase(loginThunk.pending, state => { state.loading = true })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.user = action.payload
         state.isAuthenticated = true
@@ -69,21 +65,16 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
-      .addCase(registerThunk.pending, state => { state.loading = true; state.error = null })
       .addCase(registerThunk.fulfilled, (state, action) => {
         state.user = action.payload
         state.isAuthenticated = true
         state.loading = false
       })
-      .addCase(registerThunk.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload as string
-      })
       .addCase(logoutThunk.fulfilled, state => {
         state.user = null
         state.isAuthenticated = false
       })
-  }
+  },
 })
 
 export const { setUser } = authSlice.actions
