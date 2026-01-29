@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { Note } from "@/src/types/note"
 import {
   getAllNotes,
-  createNote,
+  addNote,
   updateNote,
   deleteNote
 } from "@/src/services/noteService"
@@ -19,7 +19,7 @@ const initialState: NotesState = {
   error: null
 }
 
-// ---------------- THUNKS ----------------
+// THUNKS
 
 export const fetchNotesThunk = createAsyncThunk<Note[]>(
   "notes/fetchAll",
@@ -32,27 +32,28 @@ export const fetchNotesThunk = createAsyncThunk<Note[]>(
   }
 )
 
-export const addNoteThunk = createAsyncThunk<Note, Omit<Note, "id">>(
-  "notes/add",
-  async (noteData, { rejectWithValue }) => {
-    try {
-      return await createNote(noteData)
-    } catch (err: any) {
-      return rejectWithValue(err.message)
-    }
+export const addNoteThunk = createAsyncThunk<
+  Note,
+  { title: string; content: string }
+>("notes/add", async ({ title, content }, { rejectWithValue }) => {
+  try {
+    return await addNote(title, content)
+  } catch (err: any) {
+    return rejectWithValue(err.message)
   }
-)
+})
 
-export const updateNoteThunk = createAsyncThunk<Note, Note>(
-  "notes/update",
-  async (note, { rejectWithValue }) => {
-    try {
-      return await updateNote(note)
-    } catch (err: any) {
-      return rejectWithValue(err.message)
-    }
+export const updateNoteThunk = createAsyncThunk<
+  Note,
+  { id: string; title: string; content: string }
+>("notes/update", async ({ id, title, content }, { rejectWithValue }) => {
+  try {
+    return await updateNote(id, title, content)
+  } catch (err: any) {
+    return rejectWithValue(err.message)
   }
-)
+})
+
 
 export const deleteNoteThunk = createAsyncThunk<string, string>(
   "notes/delete",
@@ -66,7 +67,7 @@ export const deleteNoteThunk = createAsyncThunk<string, string>(
   }
 )
 
-// ---------------- SLICE ----------------
+// SLICE
 
 const notesSlice = createSlice({
   name: "notes",

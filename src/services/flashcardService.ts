@@ -19,20 +19,42 @@ import { serverTimestamp } from "firebase/firestore"
 const flashcardsCollection = collection(db, "flashcards")
 
 // Function to add a new flashcard
+// export const addFlashcard = async (
+//   question: string,
+//   answer: string
+// ) => {
+//   const user = auth.currentUser
+//   if (!user) throw new Error("User not authenticated")
+
+//   await addDoc(flashcardsCollection, {
+//     question,
+//     answer,
+//     userId: user.uid,
+//     createdAt: serverTimestamp(),
+//     updatedAt: serverTimestamp(),
+//   })
+// }
 export const addFlashcard = async (
   question: string,
   answer: string
-) => {
+): Promise<Flashcard> => {
   const user = auth.currentUser
   if (!user) throw new Error("User not authenticated")
 
-  await addDoc(flashcardsCollection, {
+  const docRef = await addDoc(flashcardsCollection, {
     question,
     answer,
     userId: user.uid,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    createdAt: serverTimestamp()
   })
+
+  return {
+    id: docRef.id,
+    question,
+    answer,
+    userId: user.uid,
+    createdAt: new Date().toISOString()
+  }
 }
 
 // Function to get all flashcards for the current user
@@ -82,21 +104,42 @@ export const getFlashcardById = async (id: string): Promise<Flashcard> => {
 }
 
 // Function to update a flashcard
+// export const updateFlashcard = async (
+//   id: string,
+//   question: string,
+//   answer: string
+// ) => {
+//   const user = auth.currentUser
+//   if (!user) throw new Error("User not authenticated")
+
+//   const ref = doc(db, "flashcards", id)
+//   const snap = await getDoc(ref)
+
+//   if (!snap.exists()) throw new Error("Flashcard not found")
+//   if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+//   await updateDoc(ref, { question, answer })
+// }
 export const updateFlashcard = async (
   id: string,
   question: string,
   answer: string
-) => {
+): Promise<Flashcard> => {
   const user = auth.currentUser
   if (!user) throw new Error("User not authenticated")
 
-  const ref = doc(db, "flashcards", id)
-  const snap = await getDoc(ref)
+  await updateDoc(doc(db, "flashcards", id), {
+    question,
+    answer
+  })
 
-  if (!snap.exists()) throw new Error("Flashcard not found")
-  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
-
-  await updateDoc(ref, { question, answer })
+  return {
+    id,
+    question,
+    answer,
+    userId: user.uid,
+    createdAt: new Date().toISOString()
+  }
 }
 
 // Function to delete a flashcard

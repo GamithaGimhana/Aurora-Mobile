@@ -18,20 +18,44 @@ import { serverTimestamp } from "firebase/firestore"
 const notesCollection = collection(db, "notes")
 
 // Function to add a new note
+// export const addNote = async (
+//   title: string,
+//   content: string
+// ) => {
+//   const user = auth.currentUser
+//   if (!user) throw new Error("User not authenticated")
+
+//   await addDoc(notesCollection, {
+//     title,
+//     content,
+//     userId: user.uid,
+//     createdAt: serverTimestamp(),
+//     updatedAt: serverTimestamp(),
+//   })
+// }
 export const addNote = async (
   title: string,
   content: string
-) => {
+): Promise<Note> => {
   const user = auth.currentUser
   if (!user) throw new Error("User not authenticated")
 
-  await addDoc(notesCollection, {
+  const docRef = await addDoc(notesCollection, {
     title,
     content,
     userId: user.uid,
     createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
   })
+
+  return {
+    id: docRef.id,
+    title,
+    content,
+    userId: user.uid,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
 }
 
 // Function to get all notes for the current user
@@ -84,25 +108,50 @@ export const getNoteById = async (id: string): Promise<Note> => {
 }
 
 // Function to update a note
+// export const updateNote = async (
+//   id: string,
+//   title: string,
+//   content: string
+// ) => {
+//   const user = auth.currentUser
+//   if (!user) throw new Error("User not authenticated")
+
+//   const ref = doc(db, "notes", id)
+//   const snap = await getDoc(ref)
+
+//   if (!snap.exists()) throw new Error("Note not found")
+//   if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+//   await updateDoc(ref, {
+//     title,
+//     content,
+//     updatedAt: serverTimestamp(),
+//   })
+// }
 export const updateNote = async (
   id: string,
   title: string,
   content: string
-) => {
+): Promise<Note> => {
   const user = auth.currentUser
   if (!user) throw new Error("User not authenticated")
 
   const ref = doc(db, "notes", id)
-  const snap = await getDoc(ref)
-
-  if (!snap.exists()) throw new Error("Note not found")
-  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
 
   await updateDoc(ref, {
     title,
     content,
-    updatedAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
   })
+
+  return {
+    id,
+    title,
+    content,
+    userId: user.uid,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
 }
 
 // Function to delete a note

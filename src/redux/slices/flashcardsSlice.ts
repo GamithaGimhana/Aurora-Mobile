@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { Flashcard } from "@/src/types/flashcard"
 import {
   getAllFlashcards,
-  createFlashcard,
+  addFlashcard,
   updateFlashcard,
   deleteFlashcard
 } from "@/src/services/flashcardService"
@@ -19,7 +19,7 @@ const initialState: FlashcardsState = {
   error: null
 }
 
-// ---------------- THUNKS ----------------
+// THUNKS
 
 export const fetchFlashcardsThunk = createAsyncThunk<Flashcard[]>(
   "flashcards/fetchAll",
@@ -34,10 +34,10 @@ export const fetchFlashcardsThunk = createAsyncThunk<Flashcard[]>(
 
 export const addFlashcardThunk = createAsyncThunk<
   Flashcard,
-  Omit<Flashcard, "id">
->("flashcards/add", async (cardData, { rejectWithValue }) => {
+  { question: string; answer: string }
+>("flashcards/add", async ({ question, answer }, { rejectWithValue }) => {
   try {
-    return await createFlashcard(cardData)
+    return await addFlashcard(question, answer)
   } catch (err: any) {
     return rejectWithValue(err.message)
   }
@@ -45,10 +45,10 @@ export const addFlashcardThunk = createAsyncThunk<
 
 export const updateFlashcardThunk = createAsyncThunk<
   Flashcard,
-  Flashcard
->("flashcards/update", async (card, { rejectWithValue }) => {
+  { id: string; question: string; answer: string }
+>("flashcards/update", async ({ id, question, answer }, { rejectWithValue }) => {
   try {
-    return await updateFlashcard(card)
+    return await updateFlashcard(id, question, answer)
   } catch (err: any) {
     return rejectWithValue(err.message)
   }
@@ -66,7 +66,7 @@ export const deleteFlashcardThunk = createAsyncThunk<string, string>(
   }
 )
 
-// ---------------- SLICE ----------------
+// SLICE
 
 const flashcardsSlice = createSlice({
   name: "flashcards",
