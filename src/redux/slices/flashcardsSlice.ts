@@ -6,6 +6,7 @@ import {
   updateFlashcard,
   deleteFlashcard
 } from "@/src/services/flashcardService"
+import { RootState } from "@/src/redux/store"
 
 interface FlashcardsState {
   cards: Flashcard[]
@@ -110,6 +111,9 @@ const flashcardsSlice = createSlice({
       })
   }
 })
+
+export const selectFlashcardById = (state: RootState, id: string) =>
+  state.flashcards.cards.find(c => c.id === id)
 
 export const { clearFlashcards } = flashcardsSlice.actions
 export default flashcardsSlice.reducer
