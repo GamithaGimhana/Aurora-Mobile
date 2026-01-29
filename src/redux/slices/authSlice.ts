@@ -66,14 +66,15 @@ const authSlice = createSlice({
         state.error = action.payload as string
       })
       .addCase(registerThunk.fulfilled, (state, action) => {
-        state.user = action.payload
-        state.isAuthenticated = true
         state.loading = false
+        state.error = null
       })
       .addCase(logoutThunk.fulfilled, state => {
         state.user = null
         state.isAuthenticated = false
-      })
+        state.loading = false
+      })      
+
   },
 })
 
