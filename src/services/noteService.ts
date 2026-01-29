@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore"
 import { db } from "./firebase"
 import { Note } from "@/src/types/note"
+import { serverTimestamp } from "firebase/firestore"
 
 const auth = getAuth()
 const notesCollection = collection(db, "notes")
@@ -29,8 +30,8 @@ export const addNote = async (
     title,
     content,
     userId: user.uid,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   })
 }
 
@@ -101,7 +102,7 @@ export const updateNote = async (
   await updateDoc(ref, {
     title,
     content,
-    updatedAt: new Date().toISOString()
+    updatedAt: serverTimestamp(),
   })
 }
 

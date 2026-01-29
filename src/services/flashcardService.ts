@@ -14,6 +14,7 @@ import {
 
 import { db } from "./firebase"
 import { Flashcard } from "@/src/types/flashcard"
+import { serverTimestamp } from "firebase/firestore"
 
 const auth = getAuth()
 const flashcardsCollection = collection(db, "flashcards")
@@ -30,7 +31,8 @@ export const addFlashcard = async (
     question,
     answer,
     userId: user.uid,
-    createdAt: new Date().toISOString()
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   })
 }
 
