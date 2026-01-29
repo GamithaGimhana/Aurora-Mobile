@@ -12,7 +12,7 @@ export default function AuthBootstrap() {
         dispatch(setUser({
           uid: user.uid,
           email: user.email,
-          name: user.displayName,
+          name: user.name,
         }))
       } else {
         dispatch(setUser(null))

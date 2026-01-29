@@ -6,7 +6,8 @@ import {
   onAuthStateChanged,
 } from "firebase/auth"
 import { auth, db } from "./firebase"
-import { doc, setDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc } from "firebase/firestore"
+import { AuthUser } from "../types/AuthUser"
 
 // Register
 export const registerUser = async (
@@ -61,18 +62,20 @@ export const logoutUser = async () => {
 
 // Firebase auth listener
 export const subscribeToAuthChanges = (
-  callback: (user: any | null) => void
+  callback: (user: AuthUser | null) => void
 ) => {
-  return onAuthStateChanged(auth, user => {
+  return onAuthStateChanged(auth, async user => {
     if (!user) {
       callback(null)
       return
     }
 
+    const snap = await getDoc(doc(db, "users", user.uid))
+
     callback({
       uid: user.uid,
       email: user.email,
-      name: user.displayName,
+      name: snap.exists() ? snap.data().name : user.displayName
     })
   })
 }
