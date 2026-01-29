@@ -58,3 +58,56 @@ export const getAllFlashcards = async (): Promise<Flashcard[]> => {
     }
   })
 }
+
+// Function to read a single flashcard
+export const getFlashcardById = async (id: string): Promise<Flashcard> => {
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
+
+  const ref = doc(db, "flashcards", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) throw new Error("Flashcard not found")
+  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+  const data = snap.data()
+  return {
+    id: snap.id,
+    question: data.question,
+    answer: data.answer,
+    userId: data.userId,
+    createdAt: data.createdAt
+  }
+}
+
+// Function to update a flashcard
+export const updateFlashcard = async (
+  id: string,
+  question: string,
+  answer: string
+) => {
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
+
+  const ref = doc(db, "flashcards", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) throw new Error("Flashcard not found")
+  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+  await updateDoc(ref, { question, answer })
+}
+
+// Function to delete a flashcard
+export const deleteFlashcard = async (id: string) => {
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
+
+  const ref = doc(db, "flashcards", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) throw new Error("Flashcard not found")
+  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+  await deleteDoc(ref)
+}
