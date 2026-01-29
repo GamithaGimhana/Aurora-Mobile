@@ -19,7 +19,7 @@ export default function Index() {
   //   )
   // }
 
-  const { isAuthenticated, initialized } = useAppSelector(
+  const { initialized, isAuthenticated } = useAppSelector(
     state => state.auth
   )
 

@@ -21,7 +21,7 @@ import { User, Mail, Lock, UserPlus, ChevronLeft } from "lucide-react-native";
 const Register = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { loading } = useAppSelector((state) => state.auth);
+  const { authLoading } = useAppSelector((state) => state.auth);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -142,12 +142,12 @@ const Register = () => {
               {/* Register Button */}
               <Pressable
                 onPress={handleRegister}
-                disabled={loading}
+                disabled={authLoading}
                 className={`bg-indigo-600 rounded-2xl py-5 flex-row justify-center items-center shadow-xl shadow-indigo-200 ${
-                  loading ? "opacity-70" : "active:scale-[0.98]"
+                  authLoading ? "opacity-70" : "active:scale-[0.98]"
                 }`}
               >
-                {loading ? (
+                {authLoading ? (
                   <ActivityIndicator color="white" />
                 ) : (
                   <Text className="text-white font-bold text-lg">Create My Account</Text>

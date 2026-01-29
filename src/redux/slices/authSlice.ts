@@ -5,15 +5,15 @@ import { AuthUser } from '@/src/types/AuthUser'
 interface AuthState {
   user: AuthUser | null
   isAuthenticated: boolean
-  loading: boolean
   initialized: boolean
+  authLoading: boolean
   error: string | null
 }
 
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  loading: true,
+  authLoading: true,
   initialized: false,
   error: null,
 }
@@ -52,30 +52,32 @@ const authSlice = createSlice({
       state.user = action.payload
       state.isAuthenticated = !!action.payload
       state.initialized = true
-      state.loading = false
+      state.authLoading = false
       state.error = null
     },
   },
   extraReducers: builder => {
     builder
-      .addCase(loginThunk.pending, state => { state.loading = true })
+      .addCase(loginThunk.pending, state => { 
+        state.authLoading = true 
+      })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.user = action.payload
         state.isAuthenticated = true
-        state.loading = false
+        state.authLoading = false
       })
       .addCase(loginThunk.rejected, (state, action) => {
-        state.loading = false
+        state.authLoading = false
         state.error = action.payload as string
       })
       .addCase(registerThunk.fulfilled, (state) => {
-        state.loading = false
+        state.authLoading = false
         state.error = null
       })
       .addCase(logoutThunk.fulfilled, state => {
         state.user = null
         state.isAuthenticated = false
-        state.loading = false
+        state.authLoading = false
       })      
 
   },

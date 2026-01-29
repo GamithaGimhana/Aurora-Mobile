@@ -1,7 +1,15 @@
-import { Tabs } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Tabs, Redirect } from "expo-router"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
 
 export default function DashboardLayout() {
+  const { isAuthenticated, initialized } = useAppSelector(state => state.auth)
+
+  if (!initialized) return null
+
+  if (!isAuthenticated) {
+    return <Redirect href="/welcome" />
+  }
+  
   return (
     <Tabs>
       <Tabs.Screen
