@@ -1,6 +1,12 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { loginUser, registerUser, logoutUser } from '@/src/services/authService'
-import { AuthUser } from '@/src/types/AuthUser'
+import { clearFlashcards } from "@/src/redux/slices/flashcardsSlice"
+import { clearNotes } from "@/src/redux/slices/notesSlice"
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "@/src/services/authService"
+import { AuthUser } from "@/src/types/AuthUser"
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 interface AuthState {
   user: AuthUser | null
@@ -18,34 +24,43 @@ const initialState: AuthState = {
   error: null,
 }
 
-export const loginThunk = createAsyncThunk<AuthUser, { email: string; password: string }>(
-  'auth/login',
-  async (payload, { rejectWithValue }) => {
-    try {
-      return await loginUser(payload.email, payload.password)
-    } catch (err: any) {
-      return rejectWithValue(err.message)
-    }
+export const loginThunk = createAsyncThunk<
+  AuthUser,
+  { email: string; password: string }
+>("auth/login", async (payload, { rejectWithValue }) => {
+  try {
+    return await loginUser(payload.email, payload.password)
+  } catch (err: any) {
+    return rejectWithValue(err.message)
   }
-)
-
-export const registerThunk = createAsyncThunk<AuthUser, { fullName: string; email: string; password: string }>(
-  'auth/register',
-  async (payload, { rejectWithValue }) => {
-    try {
-      return await registerUser(payload.fullName, payload.email, payload.password)
-    } catch (err: any) {
-      return rejectWithValue(err.message)
-    }
-  }
-)
-
-export const logoutThunk = createAsyncThunk('auth/logout', async () => {
-  await logoutUser()
 })
 
+export const registerThunk = createAsyncThunk<
+  AuthUser,
+  { fullName: string; email: string; password: string }
+>("auth/register", async (payload, { rejectWithValue }) => {
+  try {
+    return await registerUser(
+      payload.fullName,
+      payload.email,
+      payload.password,
+    )
+  } catch (err: any) {
+    return rejectWithValue(err.message)
+  }
+})
+
+export const logoutThunk = createAsyncThunk(
+  "auth/logout",
+  async (_, { dispatch }) => {
+    await logoutUser()
+    dispatch(clearNotes())
+    dispatch(clearFlashcards())
+  },
+)
+
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<AuthUser | null>) {
@@ -56,10 +71,10 @@ const authSlice = createSlice({
       state.error = null
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(loginThunk.pending, state => { 
-        state.authLoading = true 
+      .addCase(loginThunk.pending, (state) => {
+        state.authLoading = true
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.user = action.payload
@@ -74,12 +89,11 @@ const authSlice = createSlice({
         state.authLoading = false
         state.error = null
       })
-      .addCase(logoutThunk.fulfilled, state => {
+      .addCase(logoutThunk.fulfilled, (state) => {
         state.user = null
         state.isAuthenticated = false
         state.authLoading = false
-      })      
-
+      })
   },
 })
 
