@@ -1,26 +1,151 @@
-import { View, Text, TextInput, Pressable } from "react-native"
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView
+} from "react-native"
+import { useEffect, useState } from "react"
+import { useLocalSearchParams, useRouter } from "expo-router"
+import { MaterialIcons } from "@expo/vector-icons"
 
-export default function NotesForm() {
+import {
+  addNote,
+  getNoteById,
+  updateNote
+} from "@/src/services/noteService"
+
+export default function NoteForm() {
+  const router = useRouter()
+  const { noteId } = useLocalSearchParams<{ noteId?: string }>()
+
+  const [title, setTitle] = useState("")
+  const [content, setContent] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!noteId) return
+
+    setLoading(true)
+    getNoteById(noteId)
+      .then(note => {
+        setTitle(note.title)
+        setContent(note.content)
+      })
+      .catch(() => Alert.alert("Error", "Failed to load note"))
+      .finally(() => setLoading(false))
+  }, [noteId])
+
+  const handleSubmit = async () => {
+    if (loading) return
+
+    if (!title.trim() || !content.trim()) {
+      Alert.alert("Validation Error", "All fields are required")
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      if (noteId) {
+        await updateNote(noteId, title, content)
+        Alert.alert("Success", "Note updated successfully")
+      } else {
+        await addNote(title, content)
+        Alert.alert("Success", "Note created successfully")
+      }
+
+      router.back()
+    } catch (err: any) {
+      Alert.alert("Error", err.message || "Something went wrong")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <View className="flex-1 bg-white px-6 pt-6">
-      <Text className="text-2xl font-bold mb-6">New Note</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <ScrollView
+          contentContainerStyle={{ padding: 20 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* HEADER */}
+          <View className="flex-row items-center mb-8">
+            <Pressable
+              onPress={() => router.back()}
+              className="p-2 -ml-2 rounded-full active:bg-slate-200"
+            >
+              <MaterialIcons name="chevron-left" size={32} color="#334155" />
+            </Pressable>
 
-      <TextInput
-        placeholder="Title"
-        className="border border-gray-300 rounded-xl p-4 mb-4"
-      />
+            <Text className="text-2xl font-bold ml-2">
+              {noteId ? "Edit Note" : "New Note"}
+            </Text>
+          </View>
 
-      <TextInput
-        placeholder="Content"
-        multiline
-        className="border border-gray-300 rounded-xl p-4 h-40"
-      />
+          {/* FORM CARD */}
+          <View className="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+            {/* TITLE */}
+            <View className="mb-6">
+              <Text className="text-slate-500 text-xs font-bold uppercase mb-2 ml-1">
+                Title
+              </Text>
+              <TextInput
+                value={title}
+                onChangeText={setTitle}
+                placeholder="Note title"
+                className="p-4 rounded-xl bg-white border border-slate-300 text-base"
+              />
+            </View>
 
-      <Pressable className="bg-indigo-600 p-4 rounded-xl mt-6">
-        <Text className="text-white font-bold text-center">
-          Save Note
-        </Text>
-      </Pressable>
-    </View>
+            {/* CONTENT */}
+            <View className="mb-8">
+              <Text className="text-slate-500 text-xs font-bold uppercase mb-2 ml-1">
+                Content
+              </Text>
+              <TextInput
+                value={content}
+                onChangeText={setContent}
+                placeholder="Write your note here..."
+                multiline
+                textAlignVertical="top"
+                className="p-4 rounded-xl bg-white border border-slate-300 text-base h-48"
+              />
+            </View>
+
+            {/* ACTION BUTTON */}
+            <Pressable
+              disabled={loading}
+              onPress={handleSubmit}
+              className={`py-4 rounded-xl flex-row justify-center items-center ${
+                loading ? "bg-slate-400" : "bg-indigo-600"
+              }`}
+            >
+              <MaterialIcons
+                name={noteId ? "save" : "add"}
+                size={22}
+                color="white"
+                style={{ marginRight: 8 }}
+              />
+              <Text className="text-white font-bold text-lg">
+                {loading
+                  ? "Saving..."
+                  : noteId
+                  ? "Save Changes"
+                  : "Create Note"}
+              </Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   )
 }
