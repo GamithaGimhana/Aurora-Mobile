@@ -1,4 +1,4 @@
-import { getAuth } from "firebase/auth"
+import { auth } from "@/src/services/firebase"
 import {
   doc,
   getDoc,
@@ -8,8 +8,6 @@ import {
 } from "firebase/firestore"
 import { db } from "./firebase"
 import { UserProfile } from "@/src/types/user"
-
-const auth = getAuth()
 
 // Get current user's profile
 export const getCurrentUserProfile = async (): Promise<UserProfile> => {

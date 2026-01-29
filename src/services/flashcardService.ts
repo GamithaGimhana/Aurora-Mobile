@@ -1,4 +1,4 @@
-import { getAuth } from "firebase/auth"
+import { auth } from "@/src/services/firebase"
 import {
   addDoc,
   collection,
@@ -16,7 +16,6 @@ import { db } from "./firebase"
 import { Flashcard } from "@/src/types/flashcard"
 import { serverTimestamp } from "firebase/firestore"
 
-const auth = getAuth()
 const flashcardsCollection = collection(db, "flashcards")
 
 // Function to add a new flashcard

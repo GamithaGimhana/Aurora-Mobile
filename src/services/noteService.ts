@@ -1,4 +1,4 @@
-import { getAuth } from "firebase/auth"
+import { auth } from "@/src/services/firebase"
 import {
   addDoc,
   collection,
@@ -15,7 +15,6 @@ import { db } from "./firebase"
 import { Note } from "@/src/types/note"
 import { serverTimestamp } from "firebase/firestore"
 
-const auth = getAuth()
 const notesCollection = collection(db, "notes")
 
 // Function to add a new note
