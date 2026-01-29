@@ -59,3 +59,62 @@ export const getAllNotes = async (): Promise<Note[]> => {
     }
   })
 }
+
+// Function to get a single note by ID
+export const getNoteById = async (id: string): Promise<Note> => {
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
+
+  const ref = doc(db, "notes", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) throw new Error("Note not found")
+
+  const data = snap.data()
+  if (data.userId !== user.uid) throw new Error("Unauthorized")
+
+  return {
+    id: snap.id,
+    title: data.title,
+    content: data.content,
+    userId: data.userId,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt
+  }
+}
+
+// Function to update a note
+export const updateNote = async (
+  id: string,
+  title: string,
+  content: string
+) => {
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
+
+  const ref = doc(db, "notes", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) throw new Error("Note not found")
+  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+  await updateDoc(ref, {
+    title,
+    content,
+    updatedAt: new Date().toISOString()
+  })
+}
+
+// Function to delete a note
+export const deleteNote = async (id: string) => {
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
+
+  const ref = doc(db, "notes", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) throw new Error("Note not found")
+  if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
+
+  await deleteDoc(ref)
+}
