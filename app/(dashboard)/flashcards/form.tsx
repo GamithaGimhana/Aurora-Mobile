@@ -9,34 +9,37 @@ import {
 } from "react-native"
 import { useEffect, useState } from "react"
 import { useLocalSearchParams, useRouter } from "expo-router"
-import { MaterialIcons } from "@expo/vector-icons"
+
+import { useAppDispatch } from "@/src/hooks/useAppDispatch"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
 
 import {
-  addFlashcard,
-  getFlashcardById,
-  updateFlashcard
-} from "@/src/services/flashcardService"
+  addFlashcardThunk,
+  updateFlashcardThunk
+} from "@/src/redux/slices/flashcardsSlice"
 
 export default function FlashcardForm() {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const { cardId } = useLocalSearchParams<{ cardId?: string }>()
+
+  const existingCard = useAppSelector(state =>
+    cardId
+      ? state.flashcards.cards.find(c => c.id === cardId)
+      : null
+  )
+
+  const { loading } = useAppSelector(state => state.flashcards)
 
   const [question, setQuestion] = useState("")
   const [answer, setAnswer] = useState("")
-  const [loading, setLoading] = useState(false)
 
+  // Prefill on edit
   useEffect(() => {
-    if (!cardId) return
-
-    setLoading(true)
-    getFlashcardById(cardId)
-      .then(card => {
-        setQuestion(card.question)
-        setAnswer(card.answer)
-      })
-      .catch(() => Alert.alert("Error", "Failed to load flashcard"))
-      .finally(() => setLoading(false))
-  }, [cardId])
+    if (!existingCard) return
+    setQuestion(existingCard.question)
+    setAnswer(existingCard.answer)
+  }, [existingCard])
 
   const handleSubmit = async () => {
     if (!question.trim() || !answer.trim()) {
@@ -45,21 +48,27 @@ export default function FlashcardForm() {
     }
 
     try {
-      setLoading(true)
-
       if (cardId) {
-        await updateFlashcard(cardId, question, answer)
+        await dispatch(
+          updateFlashcardThunk({
+            id: cardId,
+            question,
+            answer
+          })
+        ).unwrap()
+
         Alert.alert("Success", "Flashcard updated")
       } else {
-        await addFlashcard(question, answer)
+        await dispatch(
+          addFlashcardThunk({ question, answer })
+        ).unwrap()
+
         Alert.alert("Success", "Flashcard created")
       }
 
       router.back()
     } catch (err: any) {
-      Alert.alert("Error", err.message || "Something went wrong")
-    } finally {
-      setLoading(false)
+      Alert.alert("Error", err || "Something went wrong")
     }
   }
 
@@ -86,6 +95,7 @@ export default function FlashcardForm() {
         />
 
         <Pressable
+          disabled={loading}
           onPress={handleSubmit}
           className={`py-4 rounded-xl ${
             loading ? "bg-slate-400" : "bg-emerald-600"
