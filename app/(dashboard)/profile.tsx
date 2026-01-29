@@ -1,12 +1,28 @@
-import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native"
+import { useAppDispatch } from "@/src/hooks/useAppDispatch"
+import { logoutThunk } from "@/src/redux/slices/authSlice"
 
-const Profile = () => {
+export default function Profile() {
+  const dispatch = useAppDispatch()
+
   return (
-    <View className="flex-1 justify-center items-center bg-slate-50">
-      <Text className="text-3xl font-bold">Profile Page</Text>
-    </View>
-  );
-};
+    <View style={{ padding: 20 }}>
+      <Text style={{ fontSize: 18, marginBottom: 20 }}>
+        Profile
+      </Text>
 
-export default Profile;
+      <Pressable
+        onPress={() => dispatch(logoutThunk())}
+        style={{
+          backgroundColor: "#e11d48",
+          padding: 12,
+          borderRadius: 8,
+        }}
+      >
+        <Text style={{ color: "white", textAlign: "center" }}>
+          Logout
+        </Text>
+      </Pressable>
+    </View>
+  )
+}
