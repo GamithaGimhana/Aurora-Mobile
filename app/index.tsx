@@ -19,9 +19,9 @@ export default function Index() {
     )
   }
 
-  if (!isAuthenticated) {
-    return <Redirect href="/(auth)/login" />
+  if (isAuthenticated) {
+    return <Redirect href="/(dashboard)/home" />
   }
 
-  return <Redirect href="/(dashboard)/home" />
+  return <Redirect href="/welcome" />
 }
