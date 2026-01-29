@@ -1,17 +1,23 @@
 import { View, Text, Pressable, ScrollView } from "react-native"
 import { useEffect, useState } from "react"
 import { useRouter } from "expo-router"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
 
 import { getAllFlashcards } from "@/src/services/flashcardService"
 import { Flashcard } from "@/src/types/flashcard"
 
 export default function Flashcards() {
   const router = useRouter()
+  const { user } = useAppSelector(state => state.auth)
   const [cards, setCards] = useState<Flashcard[]>([])
 
   useEffect(() => {
-    getAllFlashcards().then(setCards).catch(console.error)
-  }, [])
+    if (!user) return 
+
+    getAllFlashcards()
+      .then(setCards)
+      .catch(console.error)
+  }, [user])
 
   return (
     <View className="flex-1 bg-white px-6 pt-6">
@@ -26,6 +32,12 @@ export default function Flashcards() {
       </View>
 
       <ScrollView>
+        {cards.length === 0 && (
+          <Text className="text-gray-400 text-center mt-10">
+            No flashcards yet
+          </Text>
+        )}
+
         {cards.map(card => (
           <Pressable
             key={card.id}
