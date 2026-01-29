@@ -3,14 +3,20 @@ import { useEffect, useState } from "react"
 import { getAllNotes } from "@/src/services/noteService"
 import { Note } from "@/src/types/note"
 import { useRouter } from "expo-router"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
 
 export default function Notes() {
   const router = useRouter()
+  const { user } = useAppSelector(state => state.auth)
   const [notes, setNotes] = useState<Note[]>([])
 
   useEffect(() => {
-    getAllNotes().then(setNotes).catch(console.error)
-  }, [])
+    if (!user) return 
+
+    getAllNotes()
+      .then(setNotes)
+      .catch(console.error)
+  }, [user])
 
   return (
     <View className="flex-1 bg-white px-6 pt-6">
@@ -25,6 +31,12 @@ export default function Notes() {
       </View>
 
       <ScrollView>
+        {notes.length === 0 && (
+          <Text className="text-gray-400 text-center mt-10">
+            No notes yet
+          </Text>
+        )}
+
         {notes.map(note => (
           <Pressable
             key={note.id}
