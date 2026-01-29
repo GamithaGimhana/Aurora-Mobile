@@ -13,33 +13,41 @@ import { useEffect, useState } from "react"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { MaterialIcons } from "@expo/vector-icons"
 
+import { useAppDispatch } from "@/src/hooks/useAppDispatch"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
+
 import {
-  addNote,
-  getNoteById,
-  updateNote
-} from "@/src/services/noteService"
+  addNoteThunk,
+  updateNoteThunk
+} from "@/src/redux/slices/notesSlice"
 
 export default function NoteForm() {
   const router = useRouter()
+  const dispatch = useAppDispatch()
+
   const { noteId } = useLocalSearchParams<{ noteId?: string }>()
+
+  const { notes, loading } = useAppSelector(state => state.notes)
 
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
-  const [loading, setLoading] = useState(false)
 
+  // ---------------- LOAD NOTE FROM REDUX ----------------
   useEffect(() => {
     if (!noteId) return
 
-    setLoading(true)
-    getNoteById(noteId)
-      .then(note => {
-        setTitle(note.title)
-        setContent(note.content)
-      })
-      .catch(() => Alert.alert("Error", "Failed to load note"))
-      .finally(() => setLoading(false))
-  }, [noteId])
+    const existingNote = notes.find(n => n.id === noteId)
+    if (!existingNote) {
+      Alert.alert("Error", "Note not found")
+      router.back()
+      return
+    }
 
+    setTitle(existingNote.title)
+    setContent(existingNote.content)
+  }, [noteId, notes])
+
+  // ---------------- SUBMIT ----------------
   const handleSubmit = async () => {
     if (loading) return
 
@@ -49,21 +57,30 @@ export default function NoteForm() {
     }
 
     try {
-      setLoading(true)
-
       if (noteId) {
-        await updateNote(noteId, title, content)
+        await dispatch(
+          updateNoteThunk({
+            id: noteId,
+            title,
+            content
+          })
+        ).unwrap()
+
         Alert.alert("Success", "Note updated successfully")
       } else {
-        await addNote(title, content)
+        await dispatch(
+          addNoteThunk({
+            title,
+            content
+          })
+        ).unwrap()
+
         Alert.alert("Success", "Note created successfully")
       }
 
       router.back()
     } catch (err: any) {
-      Alert.alert("Error", err.message || "Something went wrong")
-    } finally {
-      setLoading(false)
+      Alert.alert("Error", err || "Something went wrong")
     }
   }
 
@@ -77,7 +94,7 @@ export default function NoteForm() {
           contentContainerStyle={{ padding: 20 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* HEADER */}
+          {/* ---------- HEADER ---------- */}
           <View className="flex-row items-center mb-8">
             <Pressable
               onPress={() => router.back()}
@@ -91,7 +108,7 @@ export default function NoteForm() {
             </Text>
           </View>
 
-          {/* FORM CARD */}
+          {/* ---------- FORM CARD ---------- */}
           <View className="bg-slate-50 p-6 rounded-3xl border border-slate-200">
             {/* TITLE */}
             <View className="mb-6">
