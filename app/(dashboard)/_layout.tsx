@@ -3,43 +3,37 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 export default function DashboardLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs>
       <Tabs.Screen
         name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home" size={24} color={color} />
-          ),
-        }}
+        options={{ title: "Home" }}
       />
+
       <Tabs.Screen
-        name="notes"
-        options={{
-          title: "Notes",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="note" size={24} color={color} />
-          ),
-        }}
+        name="notes/index"
+        options={{ title: "Notes" }}
       />
+
       <Tabs.Screen
-        name="flashcards"
-        options={{
-          title: "Flashcards",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="style" size={24} color={color} />
-          ),
-        }}
+        name="notes/form"
+        options={{ href: null }}
       />
+
+      <Tabs.Screen
+        name="flashcards/index"
+        options={{ title: "Flashcards" }}
+      />
+
+      <Tabs.Screen
+        name="flashcards/form"
+        options={{ href: null }}
+      />
+
       <Tabs.Screen
         name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="person" size={24} color={color} />
-          ),
-        }}
+        options={{ title: "Profile" }}
       />
     </Tabs>
+
   );
 }

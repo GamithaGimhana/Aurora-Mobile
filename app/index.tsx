@@ -5,16 +5,28 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import "../global.css"
 
 export default function Index() {
-  const { isAuthenticated, loading } = useAppSelector(
+  // const { isAuthenticated, loading } = useAppSelector(
+  //   state => state.auth
+  // )
+
+  // if (loading) {
+  //   return (
+  //     <SafeAreaView className="flex-1 justify-center items-center bg-white">
+  //       <View className="flex-1 items-center justify-center">
+  //         <ActivityIndicator size="large" />
+  //       </View>
+  //     </SafeAreaView>
+  //   )
+  // }
+
+  const { isAuthenticated, initialized } = useAppSelector(
     state => state.auth
   )
 
-  if (loading) {
+  if (!initialized) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-white">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
+        <ActivityIndicator size="large" />
       </SafeAreaView>
     )
   }

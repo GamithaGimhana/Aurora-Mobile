@@ -6,6 +6,7 @@ interface AuthState {
   user: AuthUser | null
   isAuthenticated: boolean
   loading: boolean
+  initialized: boolean
   error: string | null
 }
 
@@ -13,6 +14,7 @@ const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   loading: true,
+  initialized: false,
   error: null,
 }
 
@@ -49,6 +51,7 @@ const authSlice = createSlice({
     setUser(state, action: PayloadAction<AuthUser | null>) {
       state.user = action.payload
       state.isAuthenticated = !!action.payload
+      state.initialized = true
       state.loading = false
       state.error = null
     },
@@ -65,7 +68,7 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
-      .addCase(registerThunk.fulfilled, (state, action) => {
+      .addCase(registerThunk.fulfilled, (state) => {
         state.loading = false
         state.error = null
       })
