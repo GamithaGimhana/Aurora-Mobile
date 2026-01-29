@@ -1,47 +1,78 @@
-import { createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth, db } from './firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setUser } from "@/src/redux/slices/authSlice"
-
-// authService.ts
-export const mapFirebaseUser = (user: any) => ({
-  uid: user.uid,
-  email: user.email,
-  name: user.displayName,
-})
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth"
+import { auth, db } from "./firebase"
+import { doc, setDoc } from "firebase/firestore"
 
 // Register
-export const registerUser = async (fullName: string, email: string, password: string) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-  await updateProfile(userCredential.user, { displayName: fullName })
+export const registerUser = async (
+  fullName: string,
+  email: string,
+  password: string
+) => {
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  )
 
-  await setDoc(doc(db, 'users', userCredential.user.uid), {
+  await updateProfile(userCredential.user, {
+    displayName: fullName,
+  })
+
+  await setDoc(doc(db, "users", userCredential.user.uid), {
     uid: userCredential.user.uid,
     name: fullName,
     email,
-    role: 'user',
+    role: "user",
     createdAt: new Date(),
   })
 
-  return mapFirebaseUser(userCredential.user)
+  return {
+    uid: userCredential.user.uid,
+    email: userCredential.user.email,
+    name: fullName,
+  }
 }
 
 // Login
 export const loginUser = async (email: string, password: string) => {
-  const userCredential = await signInWithEmailAndPassword(auth, email, password)
-  return mapFirebaseUser(userCredential.user)
+  const userCredential = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  )
+
+  return {
+    uid: userCredential.user.uid,
+    email: userCredential.user.email,
+    name: userCredential.user.displayName,
+  }
 }
 
 // Logout
 export const logoutUser = async () => {
-  await signOut(auth);
-  AsyncStorage.removeItem('userToken');
-  return;
-};
+  await signOut(auth)
+}
 
-// Firebase listener (used in _layout)
-// authService.ts
-export const subscribeToAuthChanges = (callback: (user: any) => void) => {
-  return onAuthStateChanged(auth, callback)
+// Firebase auth listener
+export const subscribeToAuthChanges = (
+  callback: (user: any | null) => void
+) => {
+  return onAuthStateChanged(auth, user => {
+    if (!user) {
+      callback(null)
+      return
+    }
+
+    callback({
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName,
+    })
+  })
 }
