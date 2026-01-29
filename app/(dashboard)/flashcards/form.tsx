@@ -1,50 +1,47 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   Alert,
+  Pressable,
   ScrollView,
-  SafeAreaView
-} from "react-native"
-import { useEffect, useState } from "react"
-import { useLocalSearchParams, useRouter } from "expo-router"
+  Text,
+  TextInput
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppDispatch } from "@/src/hooks/useAppDispatch"
-import { useAppSelector } from "@/src/hooks/useAppSelector"
+import { useAppDispatch } from "@/src/hooks/useAppDispatch";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
 
 import {
   addFlashcardThunk,
-  updateFlashcardThunk
-} from "@/src/redux/slices/flashcardsSlice"
+  updateFlashcardThunk,
+} from "@/src/redux/slices/flashcardsSlice";
 
 export default function FlashcardForm() {
-  const router = useRouter()
-  const dispatch = useAppDispatch()
-  const { cardId } = useLocalSearchParams<{ cardId?: string }>()
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { cardId } = useLocalSearchParams<{ cardId?: string }>();
 
-  const existingCard = useAppSelector(state =>
-    cardId
-      ? state.flashcards.cards.find(c => c.id === cardId)
-      : null
-  )
+  const existingCard = useAppSelector((state) =>
+    cardId ? state.flashcards.cards.find((c) => c.id === cardId) : null,
+  );
 
-  const { loading } = useAppSelector(state => state.flashcards)
+  const { loading } = useAppSelector((state) => state.flashcards);
 
-  const [question, setQuestion] = useState("")
-  const [answer, setAnswer] = useState("")
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
 
   // Prefill on edit
   useEffect(() => {
-    if (!existingCard) return
-    setQuestion(existingCard.question)
-    setAnswer(existingCard.answer)
-  }, [existingCard])
+    if (!existingCard) return;
+    setQuestion(existingCard.question);
+    setAnswer(existingCard.answer);
+  }, [existingCard]);
 
   const handleSubmit = async () => {
     if (!question.trim() || !answer.trim()) {
-      Alert.alert("Validation Error", "All fields are required")
-      return
+      Alert.alert("Validation Error", "All fields are required");
+      return;
     }
 
     try {
@@ -53,24 +50,22 @@ export default function FlashcardForm() {
           updateFlashcardThunk({
             id: cardId,
             question,
-            answer
-          })
-        ).unwrap()
+            answer,
+          }),
+        ).unwrap();
 
-        Alert.alert("Success", "Flashcard updated")
+        Alert.alert("Success", "Flashcard updated");
       } else {
-        await dispatch(
-          addFlashcardThunk({ question, answer })
-        ).unwrap()
+        await dispatch(addFlashcardThunk({ question, answer })).unwrap();
 
-        Alert.alert("Success", "Flashcard created")
+        Alert.alert("Success", "Flashcard created");
       }
 
-      router.back()
+      router.back();
     } catch (err: any) {
-      Alert.alert("Error", err || "Something went wrong")
+      Alert.alert("Error", err || "Something went wrong");
     }
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -107,5 +102,5 @@ export default function FlashcardForm() {
         </Pressable>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }

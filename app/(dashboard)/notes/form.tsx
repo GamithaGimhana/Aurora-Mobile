@@ -1,59 +1,56 @@
+import { MaterialIcons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   Alert,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView
-} from "react-native"
-import { useEffect, useState } from "react"
-import { useLocalSearchParams, useRouter } from "expo-router"
-import { MaterialIcons } from "@expo/vector-icons"
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppDispatch } from "@/src/hooks/useAppDispatch"
-import { useAppSelector } from "@/src/hooks/useAppSelector"
+import { useAppDispatch } from "@/src/hooks/useAppDispatch";
+import { useAppSelector } from "@/src/hooks/useAppSelector";
 
-import {
-  addNoteThunk,
-  updateNoteThunk
-} from "@/src/redux/slices/notesSlice"
+import { addNoteThunk, updateNoteThunk } from "@/src/redux/slices/notesSlice";
 
 export default function NoteForm() {
-  const router = useRouter()
-  const dispatch = useAppDispatch()
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
-  const { noteId } = useLocalSearchParams<{ noteId?: string }>()
+  const { noteId } = useLocalSearchParams<{ noteId?: string }>();
 
-  const { notes, loading } = useAppSelector(state => state.notes)
+  const { notes, loading } = useAppSelector((state) => state.notes);
 
-  const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   // ---------------- LOAD NOTE FROM REDUX ----------------
   useEffect(() => {
-    if (!noteId) return
+    if (!noteId) return;
 
-    const existingNote = notes.find(n => n.id === noteId)
+    const existingNote = notes.find((n) => n.id === noteId);
     if (!existingNote) {
-      Alert.alert("Error", "Note not found")
-      router.back()
-      return
+      Alert.alert("Error", "Note not found");
+      router.back();
+      return;
     }
 
-    setTitle(existingNote.title)
-    setContent(existingNote.content)
-  }, [noteId, notes])
+    setTitle(existingNote.title);
+    setContent(existingNote.content);
+  }, [noteId, notes]);
 
   // ---------------- SUBMIT ----------------
   const handleSubmit = async () => {
-    if (loading) return
+    if (loading) return;
 
     if (!title.trim() || !content.trim()) {
-      Alert.alert("Validation Error", "All fields are required")
-      return
+      Alert.alert("Validation Error", "All fields are required");
+      return;
     }
 
     try {
@@ -62,27 +59,27 @@ export default function NoteForm() {
           updateNoteThunk({
             id: noteId,
             title,
-            content
-          })
-        ).unwrap()
+            content,
+          }),
+        ).unwrap();
 
-        Alert.alert("Success", "Note updated successfully")
+        Alert.alert("Success", "Note updated successfully");
       } else {
         await dispatch(
           addNoteThunk({
             title,
-            content
-          })
-        ).unwrap()
+            content,
+          }),
+        ).unwrap();
 
-        Alert.alert("Success", "Note created successfully")
+        Alert.alert("Success", "Note created successfully");
       }
 
-      router.back()
+      router.back();
     } catch (err: any) {
-      Alert.alert("Error", err || "Something went wrong")
+      Alert.alert("Error", err || "Something went wrong");
     }
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -156,13 +153,13 @@ export default function NoteForm() {
                 {loading
                   ? "Saving..."
                   : noteId
-                  ? "Save Changes"
-                  : "Create Note"}
+                    ? "Save Changes"
+                    : "Create Note"}
               </Text>
             </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  )
+  );
 }
