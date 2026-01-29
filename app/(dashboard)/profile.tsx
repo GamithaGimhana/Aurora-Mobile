@@ -1,28 +1,15 @@
-import { View, Text, Pressable } from "react-native"
-import { useAppDispatch } from "@/src/hooks/useAppDispatch"
-import { logoutThunk } from "@/src/redux/slices/authSlice"
+import { View, Text } from "react-native"
+import { useAppSelector } from "@/src/hooks/useAppSelector"
 
 export default function Profile() {
-  const dispatch = useAppDispatch()
+  const { user } = useAppSelector(state => state.auth)
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 18, marginBottom: 20 }}>
-        Profile
-      </Text>
+    <View className="flex-1 bg-white px-6 pt-10">
+      <Text className="text-3xl font-bold mb-4">Profile</Text>
 
-      <Pressable
-        onPress={() => dispatch(logoutThunk())}
-        style={{
-          backgroundColor: "#e11d48",
-          padding: 12,
-          borderRadius: 8,
-        }}
-      >
-        <Text style={{ color: "white", textAlign: "center" }}>
-          Logout
-        </Text>
-      </Pressable>
+      <Text className="text-lg">Name: {user?.name}</Text>
+      <Text className="text-lg mt-2">Email: {user?.email}</Text>
     </View>
   )
 }

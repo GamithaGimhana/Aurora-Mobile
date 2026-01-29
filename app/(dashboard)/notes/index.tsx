@@ -1,12 +1,27 @@
-import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native"
+import { useRouter } from "expo-router"
 
-const Notes = () => {
+export default function Notes() {
+  const router = useRouter()
+
   return (
-    <View className="flex-1 justify-center items-center bg-slate-50">
-      <Text className="text-3xl font-bold">Notes List</Text>
-    </View>
-  );
-};
+    <View className="flex-1 bg-white px-6 pt-6">
+      <View className="flex-row justify-between items-center mb-6">
+        <Text className="text-2xl font-bold">My Notes</Text>
+        <Pressable
+          onPress={() => router.push("/(dashboard)/notes/form")}
+          className="bg-indigo-600 px-4 py-2 rounded-xl"
+        >
+          <Text className="text-white font-bold">+ Add</Text>
+        </Pressable>
+      </View>
 
-export default Notes;
+      <View className="p-4 bg-slate-100 rounded-xl mb-3">
+        <Text className="font-bold">Sample Note</Text>
+        <Text className="text-gray-500 text-sm">
+          This is a placeholder note.
+        </Text>
+      </View>
+    </View>
+  )
+}
