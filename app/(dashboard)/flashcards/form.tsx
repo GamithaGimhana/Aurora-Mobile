@@ -5,16 +5,16 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-
 import {
   addFlashcardThunk,
   updateFlashcardThunk,
+  fetchFlashcardByIdThunk,
+  selectFlashcardById,
 } from "@/src/redux/slices/flashcardsSlice";
 
 export default function FlashcardForm() {
@@ -22,22 +22,29 @@ export default function FlashcardForm() {
   const dispatch = useAppDispatch();
   const { cardId } = useLocalSearchParams<{ cardId?: string }>();
 
-  const existingCard = useAppSelector((state) =>
-    cardId ? state.flashcards.cards.find((c) => c.id === cardId) : null,
+  const card = useAppSelector(state =>
+    cardId ? selectFlashcardById(state, cardId) : null
   );
 
-  const { loading } = useAppSelector((state) => state.flashcards);
+  const { loading } = useAppSelector(state => state.flashcards);
 
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
-  // Prefill on edit
+  // LOAD CARD SAFELY 
   useEffect(() => {
-    if (!existingCard) return;
-    setQuestion(existingCard.question);
-    setAnswer(existingCard.answer);
-  }, [existingCard]);
+    if (!cardId) return;
 
+    if (!card) {
+      dispatch(fetchFlashcardByIdThunk(cardId));
+      return;
+    }
+
+    setQuestion(card.question);
+    setAnswer(card.answer);
+  }, [cardId, card]);
+
+  // SUBMIT 
   const handleSubmit = async () => {
     if (!question.trim() || !answer.trim()) {
       Alert.alert("Validation Error", "All fields are required");
@@ -51,12 +58,14 @@ export default function FlashcardForm() {
             id: cardId,
             question,
             answer,
-          }),
+          })
         ).unwrap();
 
         Alert.alert("Success", "Flashcard updated");
       } else {
-        await dispatch(addFlashcardThunk({ question, answer })).unwrap();
+        await dispatch(
+          addFlashcardThunk({ question, answer })
+        ).unwrap();
 
         Alert.alert("Success", "Flashcard created");
       }

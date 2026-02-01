@@ -4,4 +4,5 @@ export interface Flashcard {
   answer: string
   userId: string
   createdAt: string
+  updatedAt?: string
 }

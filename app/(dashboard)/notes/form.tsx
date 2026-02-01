@@ -12,11 +12,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-
-import { addNoteThunk, updateNoteThunk } from "@/src/redux/slices/notesSlice";
+import {
+  addNoteThunk,
+  updateNoteThunk,
+  fetchNoteByIdThunk,
+  selectNoteById,
+} from "@/src/redux/slices/notesSlice";
 
 export default function NoteForm() {
   const router = useRouter();
@@ -24,27 +27,29 @@ export default function NoteForm() {
 
   const { noteId } = useLocalSearchParams<{ noteId?: string }>();
 
-  const { notes, loading } = useAppSelector((state) => state.notes);
+  const note = useAppSelector(state =>
+    noteId ? selectNoteById(state, noteId) : null
+  );
+
+  const { loading } = useAppSelector(state => state.notes);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // ---------------- LOAD NOTE FROM REDUX ----------------
+  // LOAD NOTE SAFELY 
   useEffect(() => {
     if (!noteId) return;
 
-    const existingNote = notes.find((n) => n.id === noteId);
-    if (!existingNote) {
-      Alert.alert("Error", "Note not found");
-      router.back();
+    if (!note) {
+      dispatch(fetchNoteByIdThunk(noteId));
       return;
     }
 
-    setTitle(existingNote.title);
-    setContent(existingNote.content);
-  }, [noteId, notes]);
+    setTitle(note.title);
+    setContent(note.content);
+  }, [noteId, note]);
 
-  // ---------------- SUBMIT ----------------
+  // SUBMIT
   const handleSubmit = async () => {
     if (loading) return;
 
@@ -56,20 +61,13 @@ export default function NoteForm() {
     try {
       if (noteId) {
         await dispatch(
-          updateNoteThunk({
-            id: noteId,
-            title,
-            content,
-          }),
+          updateNoteThunk({ id: noteId, title, content })
         ).unwrap();
 
         Alert.alert("Success", "Note updated successfully");
       } else {
         await dispatch(
-          addNoteThunk({
-            title,
-            content,
-          }),
+          addNoteThunk({ title, content })
         ).unwrap();
 
         Alert.alert("Success", "Note created successfully");
@@ -87,15 +85,12 @@ export default function NoteForm() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView
-          contentContainerStyle={{ padding: 20 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* ---------- HEADER ---------- */}
+        <ScrollView contentContainerStyle={{ padding: 20 }}>
+          {/* HEADER */}
           <View className="flex-row items-center mb-8">
             <Pressable
               onPress={() => router.back()}
-              className="p-2 -ml-2 rounded-full active:bg-slate-200"
+              className="p-2 -ml-2 rounded-full"
             >
               <MaterialIcons name="chevron-left" size={32} color="#334155" />
             </Pressable>
@@ -105,56 +100,32 @@ export default function NoteForm() {
             </Text>
           </View>
 
-          {/* ---------- FORM CARD ---------- */}
+          {/* FORM */}
           <View className="bg-slate-50 p-6 rounded-3xl border border-slate-200">
-            {/* TITLE */}
-            <View className="mb-6">
-              <Text className="text-slate-500 text-xs font-bold uppercase mb-2 ml-1">
-                Title
-              </Text>
-              <TextInput
-                value={title}
-                onChangeText={setTitle}
-                placeholder="Note title"
-                className="p-4 rounded-xl bg-white border border-slate-300 text-base"
-              />
-            </View>
+            <TextInput
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Title"
+              className="p-4 rounded-xl bg-white border mb-4"
+            />
 
-            {/* CONTENT */}
-            <View className="mb-8">
-              <Text className="text-slate-500 text-xs font-bold uppercase mb-2 ml-1">
-                Content
-              </Text>
-              <TextInput
-                value={content}
-                onChangeText={setContent}
-                placeholder="Write your note here..."
-                multiline
-                textAlignVertical="top"
-                className="p-4 rounded-xl bg-white border border-slate-300 text-base h-48"
-              />
-            </View>
+            <TextInput
+              value={content}
+              onChangeText={setContent}
+              placeholder="Content"
+              multiline
+              className="p-4 rounded-xl bg-white border h-48 mb-6"
+            />
 
-            {/* ACTION BUTTON */}
             <Pressable
               disabled={loading}
               onPress={handleSubmit}
-              className={`py-4 rounded-xl flex-row justify-center items-center ${
+              className={`py-4 rounded-xl ${
                 loading ? "bg-slate-400" : "bg-indigo-600"
               }`}
             >
-              <MaterialIcons
-                name={noteId ? "save" : "add"}
-                size={22}
-                color="white"
-                style={{ marginRight: 8 }}
-              />
-              <Text className="text-white font-bold text-lg">
-                {loading
-                  ? "Saving..."
-                  : noteId
-                    ? "Save Changes"
-                    : "Create Note"}
+              <Text className="text-white font-bold text-center text-lg">
+                {loading ? "Saving..." : "Save"}
               </Text>
             </Pressable>
           </View>

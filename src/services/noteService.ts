@@ -28,21 +28,6 @@ const toIsoString = (value: any): string => {
 const notesCollection = collection(db, "notes");
 
 // Function to add a new note
-// export const addNote = async (
-//   title: string,
-//   content: string
-// ) => {
-//   const user = auth.currentUser
-//   if (!user) throw new Error("User not authenticated")
-
-//   await addDoc(notesCollection, {
-//     title,
-//     content,
-//     userId: user.uid,
-//     createdAt: serverTimestamp(),
-//     updatedAt: serverTimestamp(),
-//   })
-// }
 export const addNote = async (
   title: string,
   content: string,
@@ -96,16 +81,19 @@ export const getAllNotes = async (): Promise<Note[]> => {
 
 // Function to get a single note by ID
 export const getNoteById = async (id: string): Promise<Note> => {
-  const user = auth.currentUser;
-  if (!user) throw new Error("User not authenticated");
+  const user = auth.currentUser
+  if (!user) throw new Error("User not authenticated")
 
-  const ref = doc(db, "notes", id);
-  const snap = await getDoc(ref);
+  const ref = doc(db, "notes", id)
+  const snap = await getDoc(ref)
 
-  if (!snap.exists()) throw new Error("Note not found");
+  if (!snap.exists()) throw new Error("Note not found")
 
-  const data = snap.data();
-  if (data.userId !== user.uid) throw new Error("Unauthorized");
+  const data = snap.data()
+
+  if (data.userId !== user.uid) {
+    throw new Error("Unauthorized")
+  }
 
   return {
     id: snap.id,
@@ -113,31 +101,13 @@ export const getNoteById = async (id: string): Promise<Note> => {
     content: data.content,
     userId: data.userId,
     createdAt: toIsoString(data.createdAt),
-    updatedAt: data.updatedAt ? toIsoString(data.updatedAt) : undefined,
-  };
-};
+    updatedAt: data.updatedAt
+      ? toIsoString(data.updatedAt)
+      : undefined,
+  }
+}
 
 // Function to update a note
-// export const updateNote = async (
-//   id: string,
-//   title: string,
-//   content: string
-// ) => {
-//   const user = auth.currentUser
-//   if (!user) throw new Error("User not authenticated")
-
-//   const ref = doc(db, "notes", id)
-//   const snap = await getDoc(ref)
-
-//   if (!snap.exists()) throw new Error("Note not found")
-//   if (snap.data().userId !== user.uid) throw new Error("Unauthorized")
-
-//   await updateDoc(ref, {
-//     title,
-//     content,
-//     updatedAt: serverTimestamp(),
-//   })
-// }
 export const updateNote = async (
   id: string,
   title: string,

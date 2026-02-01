@@ -1,15 +1,14 @@
 import { logoutThunk } from "@/src/redux/slices/authSlice";
 import { RootState } from "@/src/redux/store";
-import { db } from "@/src/services/firebase";
 import {
   addNote,
   deleteNote,
   getAllNotes,
+  getNoteById,
   updateNote,
 } from "@/src/services/noteService";
 import { Note } from "@/src/types/note";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { doc, getDoc } from "firebase/firestore";
 
 interface NotesState {
   notes: Note[];
@@ -35,6 +34,17 @@ export const fetchNotesThunk = createAsyncThunk<Note[]>(
     }
   },
 );
+
+export const fetchNoteByIdThunk = createAsyncThunk<
+  Note,
+  string
+>("notes/fetchById", async (id, { rejectWithValue }) => {
+  try {
+    return await getNoteById(id)
+  } catch (err: any) {
+    return rejectWithValue(err.message)
+  }
+})
 
 export const addNoteThunk = createAsyncThunk<
   Note,
@@ -70,18 +80,6 @@ export const deleteNoteThunk = createAsyncThunk<string, string>(
   },
 );
 
-export const getNoteById = async (id: string): Promise<Note> => {
-  const ref = doc(db, "notes", id)
-  const snap = await getDoc(ref)
-
-  if (!snap.exists()) {
-    throw new Error("Note not found")
-  }
-
-  return { id: snap.id, ...(snap.data() as Omit<Note, "id">) }
-}
-
-
 // SLICE
 
 const notesSlice = createSlice({
@@ -105,6 +103,14 @@ const notesSlice = createSlice({
       .addCase(fetchNotesThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchNoteByIdThunk.fulfilled, (state, action) => {
+        const index = state.notes.findIndex(n => n.id === action.payload.id)
+        if (index === -1) {
+          state.notes.push(action.payload)
+        } else {
+          state.notes[index] = action.payload
+        }
       })
 
       // ADD

@@ -3,5 +3,6 @@ export interface UserProfile {
   name: string
   email: string | null
   role: "USER" | "ADMIN"
-  createdAt: any
+  createdAt: string
+  updatedAt?: string
 }
