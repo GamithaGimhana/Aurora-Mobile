@@ -1,5 +1,6 @@
 import { logoutThunk } from "@/src/redux/slices/authSlice";
 import { RootState } from "@/src/redux/store";
+import { db } from "@/src/services/firebase";
 import {
   addNote,
   deleteNote,
@@ -8,6 +9,7 @@ import {
 } from "@/src/services/noteService";
 import { Note } from "@/src/types/note";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { doc, getDoc } from "firebase/firestore";
 
 interface NotesState {
   notes: Note[];
@@ -67,6 +69,18 @@ export const deleteNoteThunk = createAsyncThunk<string, string>(
     }
   },
 );
+
+export const getNoteById = async (id: string): Promise<Note> => {
+  const ref = doc(db, "notes", id)
+  const snap = await getDoc(ref)
+
+  if (!snap.exists()) {
+    throw new Error("Note not found")
+  }
+
+  return { id: snap.id, ...(snap.data() as Omit<Note, "id">) }
+}
+
 
 // SLICE
 
