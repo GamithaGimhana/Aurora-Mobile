@@ -2,6 +2,6 @@ export interface UserProfile {
   uid: string
   name: string
   email: string | null
-  role: "user" | "admin"
+  role: "USER" | "ADMIN"
   createdAt: any
 }

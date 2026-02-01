@@ -7,6 +7,7 @@ import {
   deleteFlashcard
 } from "@/src/services/flashcardService"
 import { RootState } from "@/src/redux/store"
+import { logoutThunk } from "@/src/redux/slices/authSlice"
 
 interface FlashcardsState {
   cards: Flashcard[]
@@ -108,6 +109,12 @@ const flashcardsSlice = createSlice({
       // DELETE
       .addCase(deleteFlashcardThunk.fulfilled, (state, action) => {
         state.cards = state.cards.filter(c => c.id !== action.payload)
+      })
+      // LOGOUT
+      .addCase(logoutThunk.fulfilled, (state) => {
+        state.cards = []
+        state.error = null
+        state.loading = false
       })
   }
 })

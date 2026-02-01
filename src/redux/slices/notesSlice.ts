@@ -1,3 +1,4 @@
+import { logoutThunk } from "@/src/redux/slices/authSlice";
 import { RootState } from "@/src/redux/store";
 import {
   addNote,
@@ -108,6 +109,12 @@ const notesSlice = createSlice({
       // DELETE
       .addCase(deleteNoteThunk.fulfilled, (state, action) => {
         state.notes = state.notes.filter((n) => n.id !== action.payload);
+      })
+      // LOGOUT
+      .addCase(logoutThunk.fulfilled, (state) => {
+        state.notes = [];
+        state.error = null;
+        state.loading = false;
       });
   },
 });
