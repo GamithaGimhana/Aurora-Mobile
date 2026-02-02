@@ -25,6 +25,7 @@ const toIsoString = (timestamp: any): string => {
 
 // Function to add a new flashcard
 export const addFlashcard = async (
+  title: string,
   question: string,
   answer: string
 ): Promise<Flashcard> => {
@@ -32,6 +33,7 @@ export const addFlashcard = async (
   if (!user) throw new Error("User not authenticated")
 
   const docRef = await addDoc(flashcardsCollection, {
+    title,
     question,
     answer,
     userId: user.uid,
@@ -44,6 +46,7 @@ export const addFlashcard = async (
 
   return {
     id: docRef.id,
+    title: data.title,
     question: data.question,
     answer: data.answer,
     userId: data.userId,
@@ -69,6 +72,7 @@ export const getAllFlashcards = async (): Promise<Flashcard[]> => {
     const data = docSnap.data()
     return {
       id: docSnap.id,
+      title: data.title,
       question: data.question,
       answer: data.answer,
       userId: data.userId,
@@ -100,6 +104,7 @@ export const getFlashcardById = async (
 
   return {
     id: snap.id,
+    title: data.title,
     question: data.question,
     answer: data.answer,
     userId: data.userId,
@@ -113,6 +118,7 @@ export const getFlashcardById = async (
 // Function to update a flashcard
 export const updateFlashcard = async (
   id: string,
+  title: string,
   question: string,
   answer: string
 ): Promise<Flashcard> => {
@@ -128,6 +134,7 @@ export const updateFlashcard = async (
   if (data.userId !== user.uid) throw new Error("Unauthorized")
 
   await updateDoc(ref, {
+    title,
     question,
     answer,
     updatedAt: serverTimestamp(),
@@ -138,6 +145,7 @@ export const updateFlashcard = async (
 
   return {
     id,
+    title: updatedData.title,
     question: updatedData.question,
     answer: updatedData.answer,
     userId: updatedData.userId,

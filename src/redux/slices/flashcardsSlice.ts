@@ -48,10 +48,10 @@ export const fetchFlashcardByIdThunk = createAsyncThunk<
 
 export const addFlashcardThunk = createAsyncThunk<
   Flashcard,
-  { question: string; answer: string }
->("flashcards/add", async ({ question, answer }, { rejectWithValue }) => {
+  { title: string; question: string; answer: string }
+>("flashcards/add", async ({ title, question, answer }, { rejectWithValue }) => {
   try {
-    return await addFlashcard(question, answer)
+    return await addFlashcard(title, question, answer)
   } catch (err: any) {
     return rejectWithValue(err.message)
   }
@@ -59,10 +59,10 @@ export const addFlashcardThunk = createAsyncThunk<
 
 export const updateFlashcardThunk = createAsyncThunk<
   Flashcard,
-  { id: string; question: string; answer: string }
->("flashcards/update", async ({ id, question, answer }, { rejectWithValue }) => {
+  { id: string; title: string; question: string; answer: string }
+>("flashcards/update", async ({ id, title, question, answer }, { rejectWithValue }) => {
   try {
-    return await updateFlashcard(id, question, answer)
+    return await updateFlashcard(id, title, question, answer)
   } catch (err: any) {
     return rejectWithValue(err.message)
   }
