@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth"
 import { auth, db } from "./firebase"
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore"
 import { AuthUser } from "../types/AuthUser"
 
 // Register
@@ -30,7 +30,7 @@ export const registerUser = async (
     name: fullName,
     email,
     role: "user",
-    createdAt: new Date(),
+    createdAt: serverTimestamp(),
   })
 
   return {
