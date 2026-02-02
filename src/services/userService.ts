@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore"
 import { db } from "./firebase"
 import { UserProfile } from "@/src/types/user"
+import { EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword } from "firebase/auth"
 
 // Get current user's profile
 export const getCurrentUserProfile = async (): Promise<UserProfile> => {
@@ -50,3 +51,40 @@ export const updateUserProfile = async (name: string) => {
     name
   })
 }
+
+export const reauthenticate = async (
+  currentPassword: string
+) => {
+  const user = auth.currentUser;
+  if (!user || !user.email) throw new Error("Not authenticated");
+
+  const credential = EmailAuthProvider.credential(
+    user.email,
+    currentPassword
+  );
+
+  await reauthenticateWithCredential(user, credential);
+};
+
+export const changeEmail = async (
+  newEmail: string
+) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not authenticated");
+
+  await updateEmail(user, newEmail);
+
+  await updateDoc(doc(db, "users", user.uid), {
+    email: newEmail,
+    updatedAt: new Date().toISOString()
+  });
+};
+
+export const changePassword = async (
+  newPassword: string
+) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not authenticated");
+
+  await updatePassword(user, newPassword);
+};
