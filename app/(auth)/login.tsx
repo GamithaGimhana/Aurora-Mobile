@@ -8,7 +8,8 @@ import {
   KeyboardAvoidingView, 
   Platform, 
   ScrollView,
-  ActivityIndicator 
+  ActivityIndicator,
+  Image
 } from "react-native";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -17,11 +18,12 @@ import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { loginThunk } from "@/src/redux/slices/authSlice";
 import { Mail, Lock, ArrowRight, ChevronLeft } from "lucide-react-native";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 const Login = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { loading } = useAppSelector(state => state.auth)
+  const { loading } = useAppSelector(state => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,23 +42,28 @@ const Login = () => {
   };
 
   return (
-    <View className="flex-1 bg-indigo-600">
+    <View className="flex-1 bg-[#050505]">
       <StatusBar style="light" />
       
-      {/* --- DECORATIVE BACKGROUND --- */}
-      <View className="absolute top-0 left-0 right-0 h-full overflow-hidden">
-        <View className="absolute -top-20 -right-20 w-80 h-80 bg-indigo-500 rounded-full opacity-40" />
-        <View className="absolute top-40 -left-20 w-60 h-60 bg-indigo-400 rounded-full opacity-20" />
-      </View>
-
+      {/* Background Glows */}
+      <View className="absolute top-[-50] left-[-50] w-64 h-64 bg-purple-900/10 rounded-full blur-3xl" />
+      
       <SafeAreaView className="flex-1" edges={['top']}>
-        {/* Back Button to Welcome */}
-        <Pressable 
-          onPress={() => router.back()} 
-          className="ml-6 mt-2 w-10 h-10 bg-white/10 rounded-full items-center justify-center border border-white/20"
-        >
-          <ChevronLeft size={20} color="white" />
-        </Pressable>
+        {/* Top Navigation */}
+        <View className="px-6 flex-row items-center justify-between">
+          <Pressable 
+            onPress={() => router.back()} 
+            className="w-12 h-12 bg-white/5 rounded-2xl items-center justify-center border border-white/10 active:bg-white/10"
+          >
+            <ChevronLeft size={24} color="white" />
+          </Pressable>
+          
+          <Image 
+            source={require("../../assets/images/Aurora-logo.png")} 
+            className="w-10 h-10"
+            resizeMode="contain"
+          />
+        </View>
 
         <KeyboardAvoidingView 
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -65,89 +72,85 @@ const Login = () => {
           <ScrollView 
             contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
+            className="px-8"
           >
-            
-            {/* --- HEADER --- */}
-            <View className="px-8 pt-6 pb-10">
-              <View className="w-14 h-14 bg-white rounded-[20px] flex items-center justify-center mb-6 shadow-xl">
-                <Text className="text-3xl font-black text-indigo-600">A</Text>
-              </View>
-              <Text className="text-white text-4xl font-extrabold tracking-tight">Welcome{"\n"}Back</Text>
-              <Text className="text-indigo-100 text-lg mt-3 opacity-90 leading-6">
-                Continue your journey toward mastering your subjects.
+            {/* Header */}
+            <Animated.View entering={FadeInUp.delay(200).duration(800)} className="py-10">
+              <Text className="text-white text-5xl font-black tracking-tighter">
+                Welcome{"\n"}
+                <Text className="text-purple-500">Back.</Text>
               </Text>
-            </View>
+              <Text className="text-gray-400 text-lg mt-4 leading-6">
+                Sign in to continue your learning journey with Aurora.
+              </Text>
+            </Animated.View>
 
-            {/* --- FORM SECTION --- */}
-            <View className="flex-1 bg-white rounded-t-[50px] px-8 pt-12 shadow-2xl">
-              
+            {/* Form Fields */}
+            <Animated.View entering={FadeInDown.delay(400).duration(800)} className="gap-y-6">
               {/* Email */}
-              <View className="mb-6">
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Email Address</Text>
-                <View className="flex-row items-center bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4">
-                  <Mail size={18} color="#6366F1" />
+              <View>
+                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">Email Address</Text>
+                <View className="flex-row items-center bg-white/5 border border-white/10 rounded-2xl px-5 py-5 focus:border-purple-500/50">
+                  <Mail size={20} color="#A855F7" opacity={0.7} />
                   <TextInput
-                    placeholder="student@university.edu"
-                    placeholderTextColor="#9CA3AF"
+                    placeholder="student@aurora.edu"
+                    placeholderTextColor="#4B5563"
                     value={email}
                     onChangeText={setEmail}
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    className="flex-1 ml-4 text-gray-900 text-base font-medium"
+                    className="flex-1 ml-4 text-white text-base font-medium"
                   />
                 </View>
               </View>
 
               {/* Password */}
-              <View className="mb-4">
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-3 ml-1">Password</Text>
-                <View className="flex-row items-center bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4">
-                  <Lock size={18} color="#6366F1" />
+              <View>
+                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">Password</Text>
+                <View className="flex-row items-center bg-white/5 border border-white/10 rounded-2xl px-5 py-5">
+                  <Lock size={20} color="#A855F7" opacity={0.7} />
                   <TextInput
                     placeholder="••••••••"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#4B5563"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
-                    className="flex-1 ml-4 text-gray-900 text-base font-medium"
+                    className="flex-1 ml-4 text-white text-base font-medium"
                   />
                 </View>
                 <Pressable className="self-end mt-4">
-                  <Text className="text-indigo-600 font-bold text-sm">Forgot Password?</Text>
+                  <Text className="text-purple-400 font-bold text-sm tracking-wide">Forgot Password?</Text>
                 </Pressable>
               </View>
+            </Animated.View>
 
-              {/* Login Button */}
-              <View className="mt-8">
-                <Pressable
-                  onPress={handleLogin}
-                  disabled={loading}
-                  className={`bg-indigo-600 rounded-2xl py-5 flex-row justify-center items-center shadow-xl shadow-indigo-200 ${
-                    loading ? "opacity-70" : "active:scale-[0.98]"
-                  }`}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="white" />
-                  ) : (
-                    <>
-                      <Text className="text-white font-bold text-lg mr-2">Sign In</Text>
-                      <ArrowRight size={20} color="white" strokeWidth={2.5} />
-                    </>
-                  )}
+            {/* Actions */}
+            <Animated.View entering={FadeInDown.delay(600).duration(800)} className="mt-10">
+              <Pressable
+                onPress={handleLogin}
+                disabled={loading}
+                className={`bg-purple-600 rounded-2xl py-5 flex-row justify-center items-center shadow-lg shadow-purple-500/20 ${
+                  loading ? "opacity-70" : "active:opacity-90"
+                }`}
+              >
+                {loading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <>
+                    <Text className="text-white font-bold text-lg mr-2">Sign In</Text>
+                    <ArrowRight size={20} color="white" />
+                  </>
+                )}
+              </Pressable>
+
+              <View className="flex-row justify-center items-center mt-8 pb-10">
+                <Text className="text-gray-500 text-base">New to Aurora? </Text>
+                <Pressable onPress={() => router.push("/(auth)/register")}>
+                  <Text className="text-purple-400 font-bold text-base">Create Account</Text>
                 </Pressable>
               </View>
+            </Animated.View>
 
-              {/* Footer */}
-              <View className="py-10 items-center">
-                <View className="flex-row justify-center items-center">
-                  <Text className="text-gray-500 text-base">Don't have an account? </Text>
-                  <Pressable onPress={() => router.push("/(auth)/register")}>
-                    <Text className="text-indigo-600 font-black text-base">Sign Up</Text>
-                  </Pressable>
-                </View>
-              </View>
-
-            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
