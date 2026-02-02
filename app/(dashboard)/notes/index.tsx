@@ -52,7 +52,7 @@ export default function NotesIndex() {
             <Text className="text-gray-500 font-medium">{notes.length} Documents</Text>
           </View>
           <Pressable 
-            onPress={() => router.push("/(dashboard)/notes/form")}
+            onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: {} })}
             className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg active:scale-95"
           >
             <Plus size={24} color="white" strokeWidth={3} />
@@ -75,7 +75,7 @@ export default function NotesIndex() {
               </View>
               <Text className="text-white text-xl font-bold">Your library is empty</Text>
               <Pressable 
-                onPress={() => router.push("/(dashboard)/notes/form")}
+                onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: {} })}
                 className="mt-6 bg-purple-600/20 px-6 py-3 rounded-xl border border-purple-500/30"
               >
                 <Text className="text-purple-400 font-bold">Create Your First Note</Text>

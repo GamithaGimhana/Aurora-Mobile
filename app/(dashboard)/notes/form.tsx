@@ -39,7 +39,11 @@ export default function NoteForm() {
 
   // Sync state with note data for editing
   useEffect(() => {
-    if (!noteId) return;
+    if (!noteId) {
+      setTitle("");
+      setContent("");
+      return;
+    }
 
     if (!note) {
       dispatch(fetchNoteByIdThunk(noteId));
@@ -47,7 +51,7 @@ export default function NoteForm() {
       setTitle(note.title);
       setContent(note.content);
     }
-  }, [noteId, note]);
+  }, [noteId, note]); 
 
   const handleSubmit = async () => {
     if (loading) return;
