@@ -10,19 +10,16 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 interface AuthState {
   user: AuthUser | null
-  isAuthenticated: boolean
-  initialized: boolean
-  authLoading: boolean
+  loading: boolean
   error: string | null
 }
 
 const initialState: AuthState = {
   user: null,
-  isAuthenticated: false,
-  authLoading: true,
-  initialized: false,
+  loading: true, 
   error: null,
 }
+
 
 export const loginThunk = createAsyncThunk<
   AuthUser,
@@ -65,36 +62,35 @@ const authSlice = createSlice({
   reducers: {
     setUser(state, action: PayloadAction<AuthUser | null>) {
       state.user = action.payload
-      state.isAuthenticated = !!action.payload
-      state.initialized = true
-      state.authLoading = false
+      state.loading = false
       state.error = null
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(loginThunk.pending, (state) => {
-        state.authLoading = true
+      .addCase(loginThunk.pending, state => {
+        state.loading = true
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.user = action.payload
-        state.isAuthenticated = true
-        state.authLoading = false
+        state.loading = false
       })
       .addCase(loginThunk.rejected, (state, action) => {
-        state.authLoading = false
+        state.loading = false
         state.error = action.payload as string
       })
-      .addCase(registerThunk.fulfilled, (state) => {
-        state.authLoading = false
+      .addCase(registerThunk.pending, state => {
+        state.loading = true
+      })
+      .addCase(registerThunk.fulfilled, state => {
+        state.loading = false
+      })
+      .addCase(logoutThunk.fulfilled, state => {
+        state.user = null
+        state.loading = false
         state.error = null
       })
-      .addCase(logoutThunk.fulfilled, (state) => {
-        state.user = null
-        state.isAuthenticated = false
-        state.authLoading = false
-      })
-  },
+  }
 })
 
 export const { setUser } = authSlice.actions

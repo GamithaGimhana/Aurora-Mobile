@@ -21,7 +21,7 @@ import { Mail, Lock, ArrowRight, ChevronLeft } from "lucide-react-native";
 const Login = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { authLoading } = useAppSelector((state) => state.auth);
+  const { loading } = useAppSelector(state => state.auth)
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -121,12 +121,12 @@ const Login = () => {
               <View className="mt-8">
                 <Pressable
                   onPress={handleLogin}
-                  disabled={authLoading}
+                  disabled={loading}
                   className={`bg-indigo-600 rounded-2xl py-5 flex-row justify-center items-center shadow-xl shadow-indigo-200 ${
-                    authLoading ? "opacity-70" : "active:scale-[0.98]"
+                    loading ? "opacity-70" : "active:scale-[0.98]"
                   }`}
                 >
-                  {authLoading ? (
+                  {loading ? (
                     <ActivityIndicator color="white" />
                   ) : (
                     <>

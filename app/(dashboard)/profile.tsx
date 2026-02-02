@@ -58,16 +58,16 @@ const ProfileSetting = ({
 export default function Profile() {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { user, initialized } = useAppSelector(state => state.auth)
+  const { user, loading } = useAppSelector(state => state.auth)
 
   // Redirect if not logged in
   useEffect(() => {
-    if (initialized && !user) {
+    if (!loading && !user) {
       router.replace("/(auth)/login")
     }
-  }, [user, initialized])
+  }, [user, loading])
 
-  if (!initialized || !user) {
+  if (loading || !user) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
         <Text className="text-gray-500">Loading profile...</Text>

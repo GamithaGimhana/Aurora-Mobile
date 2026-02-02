@@ -2,11 +2,11 @@ import { Stack, Redirect } from "expo-router"
 import { useAppSelector } from "@/src/hooks/useAppSelector"
 
 export default function AuthLayout() {
-  const { isAuthenticated, authLoading } = useAppSelector(state => state.auth)
+  const { user, loading } = useAppSelector(state => state.auth)
 
-  if (authLoading) return null 
+  if (loading) return null // or splash screen
 
-  if (isAuthenticated) {
+  if (user) {
     return <Redirect href="/(dashboard)/home" />
   }
 
