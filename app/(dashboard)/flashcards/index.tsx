@@ -13,14 +13,16 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { fetchFlashcardsThunk } from "@/src/redux/slices/flashcardsSlice";
+import { fetchFlashcardsThunk, deleteFlashcardThunk } from "@/src/redux/slices/flashcardsSlice";
 import { 
   Plus, 
   Zap, 
   BrainCircuit, 
   ChevronRight,
   BookOpen,
-  Play
+  Play,
+  Trash2,
+  Edit3
 } from "lucide-react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
@@ -53,15 +55,28 @@ export default function FlashcardsIndex() {
     dispatch(fetchFlashcardsThunk());
   };
 
+  const confirmDelete = (id: string) => {
+    Alert.alert(
+      "Delete Flashcard",
+      "Are you sure you want to permanently remove this card?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive", 
+          onPress: () => dispatch(deleteFlashcardThunk(id)) 
+        },
+      ]
+    );
+  };
+
   return (
     <View className="flex-1 bg-[#050505]">
       <StatusBar style="light" />
       
-      {/* Background Glow */}
       <View className="absolute top-[-50] left-[-50] w-64 h-64 bg-purple-900/10 rounded-full blur-3xl" />
 
       <SafeAreaView className="flex-1">
-        {/* HEADER */}
         <View className="px-6 flex-row items-center justify-between py-6">
           <View>
             <Text className="text-white text-3xl font-black tracking-tighter">Study Sets</Text>
@@ -131,30 +146,47 @@ export default function FlashcardsIndex() {
                       {set.count} Cards in Set
                     </Text>
                   </View>
-
-                  <View className="mt-6 pt-4 border-t border-white/5 flex-row justify-between items-center">
-                    <Text className="text-gray-600 text-[10px] font-bold uppercase">Click to flip & review</Text>
-                    <ChevronRight size={16} color="#374151" />
-                  </View>
                 </Pressable>
               </Animated.View>
             ))
           )}
 
-          {/* Individual Card Management Shortcut */}
           <Text className="text-gray-600 text-[10px] font-bold uppercase tracking-[2px] mt-8 mb-4 ml-1">
-            Recent Contributions
+            Manage Individual Cards
           </Text>
-          {cards.slice(0, 3).map((card) => (
-             <Pressable 
-                key={card.id}
-                onPress={() => router.push({ pathname: "/(dashboard)/flashcards/form", params: { cardId: card.id } })}
-                className="flex-row items-center bg-white/5 rounded-2xl p-4 mb-2 border border-white/5"
-             >
-                <View className="w-2 h-2 bg-purple-500 rounded-full mr-4" />
-                <Text className="text-gray-400 text-sm flex-1 font-medium" numberOfLines={1}>{card.question}</Text>
-                <ChevronRight size={14} color="#374151" />
-             </Pressable>
+          
+          {cards.map((card, index) => (
+              <Animated.View 
+                key={card.id} 
+                entering={FadeInDown.delay(index * 50).duration(400)}
+              >
+                <View className="bg-white/5 border border-white/10 rounded-[24px] mb-3 overflow-hidden">
+                  <View className="p-4 flex-row items-center">
+                    <View className="w-2 h-2 bg-purple-500 rounded-full mr-4" />
+                    <View className="flex-1">
+                      <Text className="text-white text-sm font-bold" numberOfLines={1}>{card.question}</Text>
+                      <Text className="text-gray-500 text-[10px] uppercase font-bold mt-1">{card.title}</Text>
+                    </View>
+                  </View>
+
+                  <View className="flex-row border-t border-white/5 bg-white/[0.02]">
+                    <Pressable 
+                      onPress={() => router.push({ pathname: "/(dashboard)/flashcards/form", params: { cardId: card.id } })}
+                      className="flex-1 flex-row items-center justify-center py-3 border-r border-white/5 active:bg-purple-500/10"
+                    >
+                      <Edit3 size={14} color="#A855F7" />
+                      <Text className="text-purple-400 text-[10px] font-bold ml-2 uppercase">Edit</Text>
+                    </Pressable>
+                    <Pressable 
+                      onPress={() => confirmDelete(card.id)}
+                      className="flex-1 flex-row items-center justify-center py-3 active:bg-red-500/10"
+                    >
+                      <Trash2 size={14} color="#EF4444" />
+                      <Text className="text-red-500 text-[10px] font-bold ml-2 uppercase">Delete</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Animated.View>
           ))}
         </ScrollView>
       </SafeAreaView>

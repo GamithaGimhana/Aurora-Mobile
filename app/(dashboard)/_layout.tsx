@@ -46,46 +46,27 @@ export default function DashboardLayout() {
       />
 
       <Tabs.Screen
-        name="notes/index"
+        name="notes"
         options={{ 
           title: "Notes",
           tabBarIcon: ({ color, focused }) => (
             <View className={focused ? "bg-purple-500/10 p-2 rounded-xl" : ""}>
-               <BookOpen size={24} color={color} />
+              <BookOpen size={24} color={color} />
             </View>
           )
         }}
       />
 
-      {/* Hide forms from the tab bar but keep them in the routing context */}
       <Tabs.Screen
-        name="notes/form"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="notes/view"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="flashcards/index"
+        name="flashcards"
         options={{ 
           title: "Flash",
           tabBarIcon: ({ color, focused }) => (
             <View className={focused ? "bg-purple-500/10 p-2 rounded-xl" : ""}>
-               <Layers size={24} color={color} />
+              <Layers size={24} color={color} />
             </View>
           )
         }}
-      />
-
-      <Tabs.Screen
-        name="flashcards/form"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="flashcards/study"
-        options={{ href: null }}
       />
 
       <Tabs.Screen
