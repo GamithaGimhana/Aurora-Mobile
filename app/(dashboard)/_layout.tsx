@@ -62,6 +62,10 @@ export default function DashboardLayout() {
         name="notes/form"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="notes/view"
+        options={{ href: null }}
+      />
 
       <Tabs.Screen
         name="flashcards/index"
@@ -77,6 +81,10 @@ export default function DashboardLayout() {
 
       <Tabs.Screen
         name="flashcards/form"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="flashcards/study"
         options={{ href: null }}
       />
 
