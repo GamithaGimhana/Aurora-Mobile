@@ -4,7 +4,6 @@ import {
   Text, 
   TextInput, 
   Pressable, 
-  Alert, 
   KeyboardAvoidingView, 
   Platform, 
   ScrollView,
@@ -17,45 +16,62 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { loginThunk } from "@/src/redux/slices/authSlice";
-import { Mail, Lock, ArrowRight, ChevronLeft } from "lucide-react-native";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { Mail, Lock, ArrowRight, ChevronLeft, AlertCircle, X } from "lucide-react-native";
+import Animated, { FadeInDown, FadeInUp, FadeIn } from "react-native-reanimated";
 
 const Login = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  
+  // Theme and Data selectors
+  const { darkMode } = useAppSelector(state => state.theme);
   const { loading } = useAppSelector(state => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null); // NEW: Error state
 
   const handleLogin = async () => {
+    // Reset error at start of new attempt
+    setLoginError(null);
+
     if (!email || !password) {
-      Alert.alert("Missing Information", "Please enter both your email and password.");
+      setLoginError("Please enter both your email and password.");
       return;
     }
 
     const result = await dispatch(loginThunk({ email, password }));
 
     if (loginThunk.rejected.match(result)) {
-      Alert.alert("Login Failed", (result.payload as string) || "Please check your credentials.");
+      const message = (result.payload as string) || "Invalid email or password.";
+      setLoginError(message);
     }
   };
 
+  // Theme-based style constants
+  const bgColor = darkMode ? "bg-[#050505]" : "bg-[#FAFAFA]";
+  const inputBg = darkMode ? "bg-white/5" : "bg-white";
+  const inputBorder = darkMode ? "border-white/10" : "border-gray-200";
+  const primaryText = darkMode ? "text-white" : "text-[#1A1A1A]";
+
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
-      <StatusBar style="dark" />
+    <View className={`flex-1 ${bgColor}`}>
+      <StatusBar style={darkMode ? "light" : "dark"} />
       
-      {/* Background Glows for Light Mode */}
-      <View className="absolute top-[-50] left-[-50] w-96 h-96 bg-purple-100/50 rounded-full blur-3xl" />
+      <View className={`absolute top-[-50] left-[-50] w-96 h-96 rounded-full blur-3xl ${
+        darkMode ? "bg-purple-900/20" : "bg-purple-100/50"
+      }`} />
       
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Top Navigation */}
         <View className="px-6 flex-row items-center justify-between">
           <Pressable 
             onPress={() => router.back()} 
-            className="w-12 h-12 bg-white rounded-2xl items-center justify-center border border-gray-200 shadow-sm active:bg-gray-50"
+            className={`w-12 h-12 rounded-2xl items-center justify-center border shadow-sm active:scale-95 ${
+              darkMode ? "bg-white/5 border-white/10" : "bg-white border-gray-200"
+            }`}
           >
-            <ChevronLeft size={24} color="#1A1A1A" />
+            <ChevronLeft size={24} color={darkMode ? "white" : "#1A1A1A"} />
           </Pressable>
           
           <Image 
@@ -76,46 +92,58 @@ const Login = () => {
           >
             {/* Header */}
             <Animated.View entering={FadeInUp.delay(200).duration(800)} className="py-10">
-              <Text className="text-[#1A1A1A] text-5xl font-black tracking-tighter">
+              <Text className={`${primaryText} text-5xl font-black tracking-tighter`}>
                 Welcome{"\n"}
                 <Text className="text-purple-600">Back.</Text>
               </Text>
               <Text className="text-gray-500 text-lg mt-4 leading-6 font-medium">
-                Sign in to continue your learning journey with Aurora.
+                Sign in to continue your learning journey.
               </Text>
             </Animated.View>
 
+            {/* ERROR MESSAGE DISPLAY */}
+            {loginError && (
+              <Animated.View 
+                entering={FadeIn.duration(400)} 
+                className="flex-row items-center bg-red-500/10 p-4 rounded-2xl mb-6 border border-red-500/20"
+              >
+                <AlertCircle size={20} color="#EF4444" />
+                <Text className="text-red-500 text-sm font-bold ml-3 flex-1">{loginError}</Text>
+                <Pressable onPress={() => setLoginError(null)}>
+                  <X size={16} color="#EF4444" />
+                </Pressable>
+              </Animated.View>
+            )}
+
             {/* Form Fields */}
             <Animated.View entering={FadeInDown.delay(400).duration(800)} className="gap-y-6">
-              {/* Email */}
               <View>
                 <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">Email Address</Text>
-                <View className="flex-row items-center bg-white border border-gray-200 rounded-2xl px-5 py-5 focus:border-purple-500/50">
+                <View className={`flex-row items-center border rounded-2xl px-5 py-5 ${inputBg} ${inputBorder}`}>
                   <Mail size={20} color="#9333EA" opacity={0.6} />
                   <TextInput
                     placeholder="student@aurora.edu"
                     placeholderTextColor="#9CA3AF"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(val) => {setEmail(val); setLoginError(null);}}
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    className="flex-1 ml-4 text-[#1A1A1A] text-base font-semibold"
+                    className={`flex-1 ml-4 text-base font-semibold ${primaryText}`}
                   />
                 </View>
               </View>
 
-              {/* Password */}
               <View>
                 <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">Password</Text>
-                <View className="flex-row items-center bg-white border border-gray-200 rounded-2xl px-5 py-5 focus:border-purple-500/50">
+                <View className={`flex-row items-center border rounded-2xl px-5 py-5 ${inputBg} ${inputBorder}`}>
                   <Lock size={20} color="#9333EA" opacity={0.6} />
                   <TextInput
                     placeholder="••••••••"
                     placeholderTextColor="#9CA3AF"
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(val) => {setPassword(val); setLoginError(null);}}
                     secureTextEntry
-                    className="flex-1 ml-4 text-[#1A1A1A] text-base font-semibold"
+                    className={`flex-1 ml-4 text-base font-semibold ${primaryText}`}
                   />
                 </View>
                 <Pressable className="self-end mt-4">
@@ -129,8 +157,8 @@ const Login = () => {
               <Pressable
                 onPress={handleLogin}
                 disabled={loading}
-                className={`bg-purple-600 rounded-2xl py-5 flex-row justify-center items-center shadow-md active:scale-[0.98] ${
-                  loading ? "opacity-70" : "active:opacity-90"
+                className={`bg-purple-600 rounded-2xl py-5 flex-row justify-center items-center shadow-lg active:scale-[0.98] ${
+                  loading ? "opacity-70" : "shadow-purple-500/20 active:opacity-90"
                 }`}
               >
                 {loading ? (
