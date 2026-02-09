@@ -29,6 +29,8 @@ export default function NoteForm() {
   const dispatch = useAppDispatch();
   const { noteId } = useLocalSearchParams<{ noteId?: string }>();
 
+  // Theme and Data Selectors
+  const { darkMode } = useAppSelector((state) => state.theme);
   const note = useAppSelector((state) =>
     noteId ? selectNoteById(state, noteId) : null
   );
@@ -37,6 +39,7 @@ export default function NoteForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  // Sync state with note data for editing
   useEffect(() => {
     if (!noteId) {
       setTitle("");
@@ -74,12 +77,23 @@ export default function NoteForm() {
     }
   };
 
+  // Theme-based style constants
+  const bgColor = darkMode ? "bg-[#050505]" : "bg-[#FAFAFA]";
+  const inputBg = darkMode ? "bg-white/5" : "bg-white";
+  const inputBorder = darkMode ? "border-white/10" : "border-gray-200";
+  const primaryText = darkMode ? "text-white" : "text-[#1A1A1A]";
+  const labelText = darkMode ? "text-gray-500" : "text-gray-400";
+  const bodyText = darkMode ? "text-gray-300" : "text-[#374151]";
+  const placeholderColor = darkMode ? "#4B5563" : "#9CA3AF";
+
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
-      <StatusBar style="dark" />
+    <View className={`flex-1 ${bgColor}`}>
+      <StatusBar style={darkMode ? "light" : "dark"} />
       
-      {/* Soft Background Decor */}
-      <View className="absolute top-[-50] left-[-50] w-96 h-96 bg-purple-100/40 rounded-full blur-3xl" />
+      {/* Dynamic Background Glow */}
+      <View className={`absolute top-[-50] left-[-50] w-96 h-96 rounded-full blur-3xl ${
+        darkMode ? "bg-purple-900/15" : "bg-purple-100/40"
+      }`} />
 
       <SafeAreaView className="flex-1">
         <KeyboardAvoidingView
@@ -90,12 +104,12 @@ export default function NoteForm() {
           <View className="px-6 flex-row items-center justify-between py-4">
             <Pressable
               onPress={() => router.back()}
-              className="w-11 h-11 bg-white rounded-2xl items-center justify-center border border-gray-200 shadow-sm active:bg-gray-50"
+              className={`w-11 h-11 ${inputBg} rounded-2xl items-center justify-center border ${inputBorder} shadow-sm active:opacity-70`}
             >
-              <ChevronLeft size={22} color="#1A1A1A" />
+              <ChevronLeft size={22} color={darkMode ? "white" : "#1A1A1A"} />
             </Pressable>
             
-            <Text className="text-[#1A1A1A] text-xl font-black tracking-tight">
+            <Text className={`${primaryText} text-xl font-black tracking-tight`}>
               {noteId ? "Edit Note" : "New Note"}
             </Text>
 
@@ -103,7 +117,7 @@ export default function NoteForm() {
               onPress={handleSubmit}
               disabled={loading}
               className={`w-11 h-11 rounded-2xl items-center justify-center shadow-md ${
-                loading ? "bg-gray-300" : "bg-purple-600"
+                loading ? (darkMode ? "bg-gray-800" : "bg-gray-300") : "bg-purple-600"
               }`}
             >
               {loading ? (
@@ -122,17 +136,17 @@ export default function NoteForm() {
             <Animated.View entering={FadeInUp.delay(200)} className="mb-6">
               <View className="flex-row items-center mb-3 ml-1">
                 <Type size={14} color="#9333EA" />
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <Text className={`${labelText} text-[10px] font-bold uppercase tracking-[2px] ml-2`}>
                   Note Title
                 </Text>
               </View>
-              <View className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm shadow-purple-900/5">
+              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 shadow-sm ${darkMode ? "" : "shadow-purple-900/5"}`}>
                 <TextInput
                   value={title}
                   onChangeText={setTitle}
                   placeholder="e.g. Database Fundamentals"
-                  placeholderTextColor="#9CA3AF"
-                  className="text-[#1A1A1A] text-lg font-bold"
+                  placeholderTextColor={placeholderColor}
+                  className={`${primaryText} text-lg font-bold`}
                 />
               </View>
             </Animated.View>
@@ -141,30 +155,32 @@ export default function NoteForm() {
             <Animated.View entering={FadeInUp.delay(400)} className="mb-10">
               <View className="flex-row items-center mb-3 ml-1">
                 <AlignLeft size={14} color="#9333EA" />
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <Text className={`${labelText} text-[10px] font-bold uppercase tracking-[2px] ml-2`}>
                   Content
                 </Text>
               </View>
-              <View className="bg-white border border-gray-200 rounded-[35px] px-6 py-6 h-80 shadow-sm shadow-purple-900/5">
+              <View className={`${inputBg} border ${inputBorder} rounded-[35px] px-6 py-6 h-80 shadow-sm ${darkMode ? "" : "shadow-purple-900/5"}`}>
                 <TextInput
                   value={content}
                   onChangeText={setContent}
                   placeholder="Start writing your thoughts..."
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={placeholderColor}
                   multiline
                   textAlignVertical="top"
-                  className="text-[#374151] text-base leading-6 font-medium h-full"
+                  className={`${bodyText} text-base leading-6 font-medium h-full`}
                 />
               </View>
             </Animated.View>
 
-            {/* ACTION BUTTON */}
+            {/* PRIMARY SAVE BUTTON */}
             <Animated.View entering={FadeInDown.delay(600)} className="pb-12">
               <Pressable
                 onPress={handleSubmit}
                 disabled={loading}
-                className={`h-16 rounded-[25px] flex-row items-center justify-center shadow-lg shadow-purple-200 ${
-                  loading ? "bg-gray-400" : "bg-purple-600"
+                className={`h-16 rounded-[25px] flex-row items-center justify-center shadow-lg ${
+                  loading 
+                    ? (darkMode ? "bg-gray-800" : "bg-gray-400") 
+                    : (darkMode ? "bg-purple-600 shadow-purple-900/40" : "bg-purple-600 shadow-purple-200")
                 }`}
               >
                 {loading ? (
