@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, Dimensions } from "react-native";
+import { View, Text, Pressable, Dimensions, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { ChevronLeft, Rotate3d, ChevronRight, Shuffle } from "lucide-react-native";
+import { ChevronLeft, Rotate3d, ChevronRight, Shuffle, AlertTriangle } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import Animated, { 
@@ -20,8 +20,9 @@ export default function StudyMode() {
   
   // Theme and Data selectors
   const { darkMode } = useAppSelector((state) => state.theme);
-  const allCards = useAppSelector(state => state.flashcards.cards);
-  const initialSet = allCards.filter(c => c.title === title);
+  const { cards, loading } = useAppSelector(state => state.flashcards);
+  
+  const initialSet = cards.filter(c => c.title === title);
 
   const [studySet, setStudySet] = useState(initialSet);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,7 +31,7 @@ export default function StudyMode() {
 
   useEffect(() => {
     setStudySet(initialSet);
-  }, [allCards]);
+  }, [cards, title]);
 
   const shuffleDeck = () => {
     const shuffled = [...studySet].sort(() => Math.random() - 0.5);
@@ -86,7 +87,38 @@ export default function StudyMode() {
   const headerBtnBg = darkMode ? "bg-white/5" : "bg-white";
   const headerBtnBorder = darkMode ? "border-white/10" : "border-gray-200";
 
-  if (studySet.length === 0) return null;
+  // --- LOADING STATE ---
+  if (loading && studySet.length === 0) {
+    return (
+      <View className={`flex-1 ${bgColor} justify-center items-center`}>
+        <ActivityIndicator color="#9333EA" size="large" />
+      </View>
+    );
+  }
+
+  // --- ERROR / EMPTY STATE ---
+  if (studySet.length === 0) {
+    return (
+      <View className={`flex-1 ${bgColor} justify-center items-center px-10`}>
+        <StatusBar style={darkMode ? "light" : "dark"} />
+        <Animated.View entering={FadeIn} className="items-center">
+          <View className={`w-20 h-20 rounded-full items-center justify-center mb-6 ${darkMode ? "bg-purple-500/10" : "bg-purple-50"}`}>
+             <AlertTriangle size={40} color="#9333EA" />
+          </View>
+          <Text className={`text-xl font-bold text-center ${primaryText}`}>No cards in this set</Text>
+          <Text className="text-gray-500 text-center mt-2 leading-5">
+            This study collection is currently empty. Add cards to start active recall.
+          </Text>
+          <Pressable 
+            onPress={() => router.back()}
+            className="mt-8 bg-purple-600 px-8 py-4 rounded-2xl shadow-lg"
+          >
+            <Text className="text-white font-bold">Go Back</Text>
+          </Pressable>
+        </Animated.View>
+      </View>
+    );
+  }
 
   return (
     <View className={`flex-1 ${bgColor}`}>
