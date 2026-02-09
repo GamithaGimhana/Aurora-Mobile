@@ -18,6 +18,8 @@ export default function StudyMode() {
   const { title } = useLocalSearchParams<{ title: string }>();
   const router = useRouter();
   
+  // Theme and Data selectors
+  const { darkMode } = useAppSelector((state) => state.theme);
   const allCards = useAppSelector(state => state.flashcards.cards);
   const initialSet = allCards.filter(c => c.title === title);
 
@@ -76,28 +78,38 @@ export default function StudyMode() {
     top: 0, left: 0, right: 0, bottom: 0,
   }));
 
+  // Theme constants
+  const bgColor = darkMode ? "bg-[#050505]" : "bg-[#FAFAFA]";
+  const cardBg = darkMode ? "bg-white/5" : "bg-white";
+  const cardBorder = darkMode ? "border-white/10" : "border-gray-100";
+  const primaryText = darkMode ? "text-white" : "text-[#1A1A1A]";
+  const headerBtnBg = darkMode ? "bg-white/5" : "bg-white";
+  const headerBtnBorder = darkMode ? "border-white/10" : "border-gray-200";
+
   if (studySet.length === 0) return null;
 
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
-      <StatusBar style="dark" />
+    <View className={`flex-1 ${bgColor}`}>
+      <StatusBar style={darkMode ? "light" : "dark"} />
       <SafeAreaView className="flex-1 px-6">
         
         {/* HEADER */}
         <View className="flex-row items-center justify-between py-6">
           <Pressable 
             onPress={() => router.back()} 
-            className="w-11 h-11 bg-white rounded-2xl items-center justify-center border border-gray-200 shadow-sm active:bg-gray-100"
+            className={`w-11 h-11 ${headerBtnBg} rounded-2xl items-center justify-center border ${headerBtnBorder} shadow-sm active:opacity-70`}
           >
-            <ChevronLeft color="#1A1A1A" size={22} />
+            <ChevronLeft color={darkMode ? "white" : "#1A1A1A"} size={22} />
           </Pressable>
           <View className="items-center">
-            <Text className="text-[#1A1A1A] font-black text-lg tracking-tight">{title}</Text>
+            <Text className={`${primaryText} font-black text-lg tracking-tight`}>{title}</Text>
             <Text className="text-purple-600 text-[10px] font-bold uppercase tracking-[2px]">Focus Mode</Text>
           </View>
           <Pressable 
             onPress={shuffleDeck} 
-            className="w-11 h-11 bg-purple-50 rounded-2xl items-center justify-center border border-purple-100 shadow-sm active:bg-purple-100"
+            className={`w-11 h-11 rounded-2xl items-center justify-center border shadow-sm active:opacity-70 ${
+              darkMode ? "bg-purple-900/20 border-purple-500/30" : "bg-purple-50 border-purple-100"
+            }`}
           >
             <Shuffle size={20} color="#9333EA" />
           </Pressable>
@@ -105,7 +117,7 @@ export default function StudyMode() {
 
         {/* PROGRESS INDICATOR */}
         <View className="flex-row justify-center mb-8">
-            <View className="bg-white px-5 py-1.5 rounded-full border border-gray-100 shadow-sm">
+            <View className={`${headerBtnBg} px-5 py-1.5 rounded-full border ${headerBtnBorder} shadow-sm`}>
                 <Text className="text-gray-400 font-bold text-[10px] uppercase tracking-widest">
                    Card <Text className="text-purple-600 font-black">{currentIndex + 1}</Text> of {studySet.length}
                 </Text>
@@ -116,12 +128,14 @@ export default function StudyMode() {
         <Animated.View entering={FadeIn.duration(800)} className="flex-1 justify-center items-center">
           <Pressable onPress={flipCard} style={{ width: width * 0.88, height: 450 }}>
             {/* FRONT (QUESTION) */}
-            <Animated.View style={[frontStyle]} className="w-full h-full bg-white border border-gray-100 rounded-[45px] items-center justify-center p-10 shadow-xl shadow-purple-900/5">
+            <Animated.View style={[frontStyle]} className={`w-full h-full border ${cardBorder} ${cardBg} rounded-[45px] items-center justify-center p-10 shadow-xl shadow-purple-900/5`}>
               <Text className="text-purple-600 text-[10px] font-black uppercase tracking-[4px] mb-8">Question</Text>
-              <Text className="text-[#1A1A1A] text-2xl font-bold text-center leading-10 tracking-tight">
+              <Text className={`${primaryText} text-2xl font-bold text-center leading-10 tracking-tight`}>
                 {studySet[currentIndex].question}
               </Text>
-              <View className="absolute bottom-12 flex-row items-center bg-gray-50 px-5 py-2.5 rounded-2xl border border-gray-100">
+              <View className={`absolute bottom-12 flex-row items-center px-5 py-2.5 rounded-2xl border ${
+                darkMode ? "bg-white/5 border-white/10" : "bg-gray-50 border-gray-100"
+              }`}>
                 <Rotate3d size={16} color="#9333EA" />
                 <Text className="text-gray-500 text-[10px] font-bold ml-2 uppercase tracking-widest">Tap to flip</Text>
               </View>
@@ -146,14 +160,18 @@ export default function StudyMode() {
           <Pressable 
             onPress={prevCard}
             disabled={currentIndex === 0}
-            className={`w-16 h-16 rounded-[24px] items-center justify-center border border-gray-200 shadow-sm ${currentIndex === 0 ? 'bg-gray-50 opacity-30' : 'bg-white active:bg-gray-100'}`}
+            className={`w-16 h-16 rounded-[24px] items-center justify-center border ${headerBtnBorder} shadow-sm ${
+              currentIndex === 0 
+                ? (darkMode ? 'bg-white/5 opacity-10' : 'bg-gray-50 opacity-30') 
+                : `${headerBtnBg} active:opacity-70`
+            }`}
           >
-            <ChevronLeft color="#1A1A1A" size={28} />
+            <ChevronLeft color={darkMode ? "white" : "#1A1A1A"} size={28} />
           </Pressable>
 
           <Pressable 
             onPress={nextCard}
-            className="flex-1 h-16 bg-purple-600 rounded-[24px] flex-row items-center justify-center shadow-lg shadow-purple-200 active:scale-[0.98]"
+            className="flex-1 h-16 bg-purple-600 rounded-[24px] flex-row items-center justify-center shadow-lg shadow-purple-900/30 active:scale-[0.98]"
           >
             <Text className="text-white font-black text-lg mr-2 uppercase tracking-widest">
               {currentIndex === studySet.length - 1 ? "Finish" : "Next Card"}

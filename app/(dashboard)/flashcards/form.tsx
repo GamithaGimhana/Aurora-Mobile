@@ -29,6 +29,8 @@ export default function FlashcardForm() {
   const dispatch = useAppDispatch();
   const { cardId } = useLocalSearchParams<{ cardId?: string }>();
 
+  // Theme and Data selectors
+  const { darkMode } = useAppSelector((state) => state.theme);
   const card = useAppSelector((state) =>
     cardId ? selectFlashcardById(state, cardId) : null
   );
@@ -38,7 +40,7 @@ export default function FlashcardForm() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
-  // --- SAFE LOAD & RESET LOGIC ---
+  // Sync state for editing
   useEffect(() => {
     if (!cardId) {
       setTitle("");
@@ -82,12 +84,23 @@ export default function FlashcardForm() {
     }
   };
 
+  // Theme constants
+  const bgColor = darkMode ? "bg-[#050505]" : "bg-[#FAFAFA]";
+  const inputBg = darkMode ? "bg-white/5" : "bg-white";
+  const inputBorder = darkMode ? "border-white/10" : "border-gray-200";
+  const primaryText = darkMode ? "text-white" : "text-[#1A1A1A]";
+  const bodyText = darkMode ? "text-gray-300" : "text-[#374151]";
+  const labelText = darkMode ? "text-gray-500" : "text-gray-400";
+  const placeholderColor = darkMode ? "#4B5563" : "#9CA3AF";
+
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
-      <StatusBar style="dark" />
+    <View className={`flex-1 ${bgColor}`}>
+      <StatusBar style={darkMode ? "light" : "dark"} />
       
-      {/* Soft Background Decor */}
-      <View className="absolute top-[-50] left-[-50] w-96 h-96 bg-purple-100/40 rounded-full blur-3xl" />
+      {/* Dynamic Background Glow */}
+      <View className={`absolute top-[-50] left-[-50] w-96 h-96 rounded-full blur-3xl ${
+        darkMode ? "bg-purple-900/15" : "bg-purple-100/40"
+      }`} />
 
       <SafeAreaView className="flex-1">
         <KeyboardAvoidingView
@@ -98,12 +111,12 @@ export default function FlashcardForm() {
           <View className="px-6 flex-row items-center justify-between py-4">
             <Pressable
               onPress={() => router.back()}
-              className="w-11 h-11 bg-white rounded-2xl items-center justify-center border border-gray-200 shadow-sm active:bg-gray-50"
+              className={`w-11 h-11 ${inputBg} rounded-2xl items-center justify-center border ${inputBorder} shadow-sm active:opacity-70`}
             >
-              <ChevronLeft size={22} color="#1A1A1A" />
+              <ChevronLeft size={22} color={darkMode ? "white" : "#1A1A1A"} />
             </Pressable>
             
-            <Text className="text-[#1A1A1A] text-xl font-black tracking-tight">
+            <Text className={`${primaryText} text-xl font-black tracking-tight`}>
               {cardId ? "Edit Card" : "New Card"}
             </Text>
 
@@ -111,7 +124,7 @@ export default function FlashcardForm() {
               onPress={handleSubmit}
               disabled={loading}
               className={`w-11 h-11 rounded-2xl items-center justify-center shadow-md ${
-                loading ? "bg-gray-300" : "bg-purple-600"
+                loading ? (darkMode ? "bg-gray-800" : "bg-gray-300") : "bg-purple-600"
               }`}
             >
               {loading ? (
@@ -130,17 +143,17 @@ export default function FlashcardForm() {
             <Animated.View entering={FadeInUp.delay(200)} className="mb-6">
               <View className="flex-row items-center mb-3 ml-1">
                 <Book size={14} color="#9333EA" />
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <Text className={`${labelText} text-[10px] font-bold uppercase tracking-[2px] ml-2`}>
                   Set Title (e.g., Biology)
                 </Text>
               </View>
-              <View className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm shadow-purple-900/5">
+              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 shadow-sm`}>
                 <TextInput
                   value={title}
                   onChangeText={setTitle}
                   placeholder="Enter study set title..."
-                  placeholderTextColor="#9CA3AF"
-                  className="text-[#1A1A1A] text-base font-bold"
+                  placeholderTextColor={placeholderColor}
+                  className={`${primaryText} text-base font-bold`}
                 />
               </View>
             </Animated.View>
@@ -149,18 +162,18 @@ export default function FlashcardForm() {
             <Animated.View entering={FadeInUp.delay(400)} className="mb-6">
               <View className="flex-row items-center mb-3 ml-1">
                 <HelpCircle size={14} color="#9333EA" />
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <Text className={`${labelText} text-[10px] font-bold uppercase tracking-[2px] ml-2`}>
                   Front Side (Question)
                 </Text>
               </View>
-              <View className="bg-white border border-gray-200 rounded-2xl px-5 py-4 h-28 shadow-sm shadow-purple-900/5">
+              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 h-28 shadow-sm`}>
                 <TextInput
                   value={question}
                   onChangeText={setQuestion}
                   placeholder="What is the question?"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={placeholderColor}
                   multiline
-                  className="text-[#1A1A1A] text-base font-medium h-full"
+                  className={`${primaryText} text-base font-medium h-full`}
                   textAlignVertical="top"
                 />
               </View>
@@ -170,19 +183,19 @@ export default function FlashcardForm() {
             <Animated.View entering={FadeInUp.delay(600)} className="mb-10">
               <View className="flex-row items-center mb-3 ml-1">
                 <MessageSquare size={14} color="#9333EA" />
-                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <Text className={`${labelText} text-[10px] font-bold uppercase tracking-[2px] ml-2`}>
                   Back Side (Answer)
                 </Text>
               </View>
-              <View className="bg-white border border-gray-100 rounded-[35px] px-6 py-6 h-48 shadow-sm shadow-purple-900/5">
+              <View className={`${inputBg} border ${inputBorder} rounded-[35px] px-6 py-6 h-48 shadow-sm`}>
                 <TextInput
                   value={answer}
                   onChangeText={setAnswer}
                   placeholder="Provide the detailed answer..."
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={placeholderColor}
                   multiline
                   textAlignVertical="top"
-                  className="text-[#374151] text-base leading-6 font-medium h-full"
+                  className={`${bodyText} text-base leading-6 font-medium h-full`}
                 />
               </View>
             </Animated.View>
@@ -192,8 +205,10 @@ export default function FlashcardForm() {
               <Pressable
                 onPress={handleSubmit}
                 disabled={loading}
-                className={`h-16 rounded-[25px] flex-row items-center justify-center shadow-lg shadow-purple-200 ${
-                  loading ? "bg-gray-400" : "bg-purple-600"
+                className={`h-16 rounded-[25px] flex-row items-center justify-center shadow-lg ${
+                  loading 
+                    ? (darkMode ? "bg-gray-800" : "bg-gray-400") 
+                    : "bg-purple-600 shadow-purple-900/20"
                 }`}
               >
                 {loading ? (
