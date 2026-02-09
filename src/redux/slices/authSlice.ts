@@ -1,5 +1,3 @@
-import { clearFlashcards } from "@/src/redux/slices/flashcardsSlice"
-import { clearNotes } from "@/src/redux/slices/notesSlice"
 import {
   loginUser,
   logoutUser,
@@ -49,10 +47,8 @@ export const registerThunk = createAsyncThunk<
 
 export const logoutThunk = createAsyncThunk(
   "auth/logout",
-  async (_, { dispatch }) => {
+  async () => {
     await logoutUser()
-    dispatch(clearNotes())
-    dispatch(clearFlashcards())
   },
 )
 
