@@ -37,7 +37,6 @@ export default function NoteForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // Sync state with note data for editing
   useEffect(() => {
     if (!noteId) {
       setTitle("");
@@ -51,7 +50,7 @@ export default function NoteForm() {
       setTitle(note.title);
       setContent(note.content);
     }
-  }, [noteId, note]); 
+  }, [noteId, note]);
 
   const handleSubmit = async () => {
     if (loading) return;
@@ -76,11 +75,11 @@ export default function NoteForm() {
   };
 
   return (
-    <View className="flex-1 bg-[#050505]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-[#FAFAFA]">
+      <StatusBar style="dark" />
       
-      {/* Background Glow */}
-      <View className="absolute top-[-50] left-[-50] w-64 h-64 bg-purple-900/10 rounded-full blur-3xl" />
+      {/* Soft Background Decor */}
+      <View className="absolute top-[-50] left-[-50] w-96 h-96 bg-purple-100/40 rounded-full blur-3xl" />
 
       <SafeAreaView className="flex-1">
         <KeyboardAvoidingView
@@ -91,26 +90,26 @@ export default function NoteForm() {
           <View className="px-6 flex-row items-center justify-between py-4">
             <Pressable
               onPress={() => router.back()}
-              className="w-12 h-12 bg-white/5 rounded-2xl items-center justify-center border border-white/10"
+              className="w-11 h-11 bg-white rounded-2xl items-center justify-center border border-gray-200 shadow-sm active:bg-gray-50"
             >
-              <ChevronLeft size={24} color="white" />
+              <ChevronLeft size={22} color="#1A1A1A" />
             </Pressable>
             
-            <Text className="text-white text-xl font-black tracking-tight">
+            <Text className="text-[#1A1A1A] text-xl font-black tracking-tight">
               {noteId ? "Edit Note" : "New Note"}
             </Text>
 
             <Pressable
               onPress={handleSubmit}
               disabled={loading}
-              className={`w-12 h-12 rounded-2xl items-center justify-center ${
-                loading ? "bg-gray-800" : "bg-purple-600"
+              className={`w-11 h-11 rounded-2xl items-center justify-center shadow-md ${
+                loading ? "bg-gray-300" : "bg-purple-600"
               }`}
             >
               {loading ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
-                <Check size={24} color="white" strokeWidth={3} />
+                <Check size={22} color="white" strokeWidth={3} />
               )}
             </Pressable>
           </View>
@@ -122,18 +121,18 @@ export default function NoteForm() {
             {/* TITLE INPUT */}
             <Animated.View entering={FadeInUp.delay(200)} className="mb-6">
               <View className="flex-row items-center mb-3 ml-1">
-                <Type size={14} color="#A855F7" />
-                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <Type size={14} color="#9333EA" />
+                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
                   Note Title
                 </Text>
               </View>
-              <View className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4">
+              <View className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm shadow-purple-900/5">
                 <TextInput
                   value={title}
                   onChangeText={setTitle}
-                  placeholder="Enter a descriptive title..."
-                  placeholderTextColor="#4B5563"
-                  className="text-white text-lg font-bold"
+                  placeholder="e.g. Database Fundamentals"
+                  placeholderTextColor="#9CA3AF"
+                  className="text-[#1A1A1A] text-lg font-bold"
                 />
               </View>
             </Animated.View>
@@ -141,38 +140,38 @@ export default function NoteForm() {
             {/* CONTENT INPUT */}
             <Animated.View entering={FadeInUp.delay(400)} className="mb-10">
               <View className="flex-row items-center mb-3 ml-1">
-                <AlignLeft size={14} color="#A855F7" />
-                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] ml-2">
+                <AlignLeft size={14} color="#9333EA" />
+                <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] ml-2">
                   Content
                 </Text>
               </View>
-              <View className="bg-white/5 border border-white/10 rounded-3xl px-5 py-5 h-64">
+              <View className="bg-white border border-gray-200 rounded-[35px] px-6 py-6 h-80 shadow-sm shadow-purple-900/5">
                 <TextInput
                   value={content}
                   onChangeText={setContent}
                   placeholder="Start writing your thoughts..."
-                  placeholderTextColor="#4B5563"
+                  placeholderTextColor="#9CA3AF"
                   multiline
                   textAlignVertical="top"
-                  className="text-gray-300 text-base leading-6 h-full"
+                  className="text-[#374151] text-base leading-6 font-medium h-full"
                 />
               </View>
             </Animated.View>
 
-            {/* SAVE BUTTON (Secondary access) */}
-            <Animated.View entering={FadeInDown.delay(600)} className="pb-10">
+            {/* ACTION BUTTON */}
+            <Animated.View entering={FadeInDown.delay(600)} className="pb-12">
               <Pressable
                 onPress={handleSubmit}
                 disabled={loading}
-                className={`h-16 rounded-2xl flex-row items-center justify-center shadow-lg shadow-purple-500/20 ${
-                  loading ? "bg-gray-800" : "bg-purple-600"
+                className={`h-16 rounded-[25px] flex-row items-center justify-center shadow-lg shadow-purple-200 ${
+                  loading ? "bg-gray-400" : "bg-purple-600"
                 }`}
               >
                 {loading ? (
                   <ActivityIndicator color="white" />
                 ) : (
                   <>
-                    <Text className="text-white font-bold text-lg mr-2">
+                    <Text className="text-white font-bold text-lg mr-2 uppercase tracking-widest">
                       {noteId ? "Update Note" : "Save Note"}
                     </Text>
                     <Check size={20} color="white" strokeWidth={2.5} />

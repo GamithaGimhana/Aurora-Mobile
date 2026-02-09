@@ -38,22 +38,25 @@ export default function NotesIndex() {
   };
 
   return (
-    <View className="flex-1 bg-[#050505]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-[#FAFAFA]">
+      <StatusBar style="dark" />
       
-      {/* Background Glow */}
-      <View className="absolute top-[-50] right-[-50] w-64 h-64 bg-purple-900/10 rounded-full blur-3xl" />
+      {/* Background Decor */}
+      <View className="absolute top-[-50] left-[-50] w-96 h-96 bg-purple-100/40 rounded-full blur-3xl" />
 
       <SafeAreaView className="flex-1">
         {/* HEADER */}
-        <View className="px-6 flex-row items-center justify-between py-6">
+        <View className="px-8 flex-row items-center justify-between py-6">
           <View>
-            <Text className="text-white text-3xl font-black tracking-tighter">My Notes</Text>
-            <Text className="text-gray-500 font-medium">{notes.length} Documents</Text>
+            <Text className="text-[#1A1A1A] text-3xl font-black tracking-tighter">My Notes</Text>
+            <View className="flex-row items-center mt-1">
+               <View className="w-2 h-2 bg-purple-500 rounded-full mr-2" />
+               <Text className="text-gray-400 text-xs font-bold uppercase tracking-widest">{notes.length} Documents</Text>
+            </View>
           </View>
           <Pressable 
             onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: {} })}
-            className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg active:scale-95"
+            className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg shadow-purple-200 active:scale-90"
           >
             <Plus size={24} color="white" strokeWidth={3} />
           </Pressable>
@@ -66,19 +69,20 @@ export default function NotesIndex() {
         >
           {loading ? (
             <View className="py-20">
-              <ActivityIndicator color="#A855F7" size="large" />
+              <ActivityIndicator color="#9333EA" size="large" />
             </View>
           ) : notes.length === 0 ? (
             <Animated.View entering={FadeInUp} className="py-20 items-center justify-center">
-              <View className="w-20 h-20 bg-white/5 rounded-full items-center justify-center mb-6">
-                <FileText size={32} color="#4B5563" />
+              <View className="w-24 h-24 bg-white rounded-[35px] items-center justify-center mb-6 shadow-sm border border-gray-100">
+                <FileText size={40} color="#D1D5DB" />
               </View>
-              <Text className="text-white text-xl font-bold">Your library is empty</Text>
+              <Text className="text-[#1A1A1A] text-xl font-bold">Your library is empty</Text>
+              <Text className="text-gray-400 text-center mt-2 px-10 font-medium">Create your first smart note to begin your journey.</Text>
               <Pressable 
                 onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: {} })}
-                className="mt-6 bg-purple-600/20 px-6 py-3 rounded-xl border border-purple-500/30"
+                className="mt-8 bg-purple-50 px-8 py-4 rounded-2xl border border-purple-100 shadow-sm"
               >
-                <Text className="text-purple-400 font-bold">Create Your First Note</Text>
+                <Text className="text-purple-600 font-black uppercase tracking-widest text-xs">Create First Note</Text>
               </Pressable>
             </Animated.View>
           ) : (
@@ -87,44 +91,44 @@ export default function NotesIndex() {
                 key={note.id} 
                 entering={FadeInDown.delay(index * 100).duration(500)}
               >
-                <View className="bg-white/5 border border-white/10 rounded-[28px] mb-4 overflow-hidden">
+                <View className="bg-white border border-gray-100 rounded-[32px] mb-5 overflow-hidden shadow-sm shadow-purple-900/5">
                   <Pressable
                     onPress={() => router.push({ pathname: "/(dashboard)/notes/view", params: { noteId: note.id } })}
-                    className="p-5 flex-row items-center active:bg-white/10"
+                    className="p-6 flex-row items-center active:bg-gray-50"
                   >
-                    <View className="w-14 h-14 bg-purple-500/20 rounded-2xl items-center justify-center mr-4">
-                      <BookOpen size={24} color="#A855F7" />
+                    <View className="w-14 h-14 bg-purple-50 rounded-[20px] items-center justify-center mr-4">
+                      <BookOpen size={24} color="#9333EA" />
                     </View>
                     
                     <View className="flex-1">
-                      <Text className="text-white text-lg font-bold mb-1" numberOfLines={1}>
+                      <Text className="text-[#1A1A1A] text-lg font-bold mb-1" numberOfLines={1}>
                         {note.title}
                       </Text>
                       <View className="flex-row items-center">
-                        <Clock size={12} color="#6B7280" />
-                        <Text className="text-gray-500 text-xs ml-1 font-medium">
+                        <Clock size={12} color="#9CA3AF" />
+                        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-wider ml-1">
                           {new Date(note.createdAt).toLocaleDateString()}
                         </Text>
                       </View>
                     </View>
-                    <ChevronRight size={18} color="#374151" />
+                    <ChevronRight size={18} color="#D1D5DB" />
                   </Pressable>
 
                   {/* QUICK ACTION BAR */}
-                  <View className="flex-row border-t border-white/5 bg-white/[0.02]">
+                  <View className="flex-row border-t border-gray-50 bg-gray-50/30">
                     <Pressable 
                       onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: { noteId: note.id } })}
-                      className="flex-1 flex-row items-center justify-center py-3 border-r border-white/5 active:bg-purple-500/10"
+                      className="flex-1 flex-row items-center justify-center py-4 border-r border-gray-100 active:bg-purple-50"
                     >
-                      <Edit3 size={14} color="#A855F7" />
-                      <Text className="text-purple-400 text-xs font-bold ml-2">Edit</Text>
+                      <Edit3 size={16} color="#9333EA" />
+                      <Text className="text-purple-600 text-xs font-bold ml-2 uppercase tracking-widest">Edit</Text>
                     </Pressable>
                     <Pressable 
                       onPress={() => confirmDelete(note.id, note.title)}
-                      className="flex-1 flex-row items-center justify-center py-3 active:bg-red-500/10"
+                      className="flex-1 flex-row items-center justify-center py-4 active:bg-red-50"
                     >
-                      <Trash2 size={14} color="#EF4444" />
-                      <Text className="text-red-500 text-xs font-bold ml-2">Delete</Text>
+                      <Trash2 size={16} color="#EF4444" />
+                      <Text className="text-red-500 text-xs font-bold ml-2 uppercase tracking-widest">Delete</Text>
                     </Pressable>
                   </View>
                 </View>

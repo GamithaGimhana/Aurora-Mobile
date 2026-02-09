@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Dimensions } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
-import { ChevronLeft, Rotate3d, ChevronRight, Shuffle, ChevronLeftSquare } from "lucide-react-native";
+import { ChevronLeft, Rotate3d, ChevronRight, Shuffle } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
-  withTiming 
+  withTiming,
+  FadeIn
 } from "react-native-reanimated";
 
 const { width } = Dimensions.get("window");
@@ -19,18 +21,15 @@ export default function StudyMode() {
   const allCards = useAppSelector(state => state.flashcards.cards);
   const initialSet = allCards.filter(c => c.title === title);
 
-  // --- NEW STATES ---
   const [studySet, setStudySet] = useState(initialSet);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const flipRotation = useSharedValue(0);
 
-  // Initialize and handle empty sets
   useEffect(() => {
     setStudySet(initialSet);
   }, [allCards]);
 
-  // --- LOGIC FUNCTIONS ---
   const shuffleDeck = () => {
     const shuffled = [...studySet].sort(() => Math.random() - 0.5);
     setStudySet(shuffled);
@@ -52,7 +51,6 @@ export default function StudyMode() {
   const nextCard = () => {
     if (currentIndex < studySet.length - 1) {
       resetFlip();
-      // Small delay to allow flip animation to reset before changing content
       setTimeout(() => setCurrentIndex(currentIndex + 1), 150);
     } else {
       router.back();
@@ -66,7 +64,6 @@ export default function StudyMode() {
     }
   };
 
-  // --- ANIMATIONS ---
   const frontStyle = useAnimatedStyle(() => ({
     transform: [{ rotateY: `${flipRotation.value}deg` }],
     backfaceVisibility: "hidden",
@@ -82,70 +79,84 @@ export default function StudyMode() {
   if (studySet.length === 0) return null;
 
   return (
-    <View className="flex-1 bg-[#050505]">
+    <View className="flex-1 bg-[#FAFAFA]">
+      <StatusBar style="dark" />
       <SafeAreaView className="flex-1 px-6">
-        {/* Header */}
+        
+        {/* HEADER */}
         <View className="flex-row items-center justify-between py-6">
-          <Pressable onPress={() => router.back()} className="p-2 bg-white/5 rounded-full">
-            <ChevronLeft color="white" />
+          <Pressable 
+            onPress={() => router.back()} 
+            className="w-11 h-11 bg-white rounded-2xl items-center justify-center border border-gray-200 shadow-sm active:bg-gray-100"
+          >
+            <ChevronLeft color="#1A1A1A" size={22} />
           </Pressable>
           <View className="items-center">
-            <Text className="text-white font-bold text-lg">{title}</Text>
-            <Text className="text-gray-500 text-[10px] uppercase tracking-widest">Active Recall</Text>
+            <Text className="text-[#1A1A1A] font-black text-lg tracking-tight">{title}</Text>
+            <Text className="text-purple-600 text-[10px] font-bold uppercase tracking-[2px]">Focus Mode</Text>
           </View>
-          <Pressable onPress={shuffleDeck} className="p-2 bg-purple-600/20 rounded-full border border-purple-500/30">
-            <Shuffle size={20} color="#A855F7" />
+          <Pressable 
+            onPress={shuffleDeck} 
+            className="w-11 h-11 bg-purple-50 rounded-2xl items-center justify-center border border-purple-100 shadow-sm active:bg-purple-100"
+          >
+            <Shuffle size={20} color="#9333EA" />
           </Pressable>
         </View>
 
-        {/* Progress Indicator */}
+        {/* PROGRESS INDICATOR */}
         <View className="flex-row justify-center mb-8">
-            <View className="bg-white/5 px-4 py-1 rounded-full border border-white/10">
-                <Text className="text-purple-500 font-black text-xs">
-                    {currentIndex + 1} / {studySet.length}
+            <View className="bg-white px-5 py-1.5 rounded-full border border-gray-100 shadow-sm">
+                <Text className="text-gray-400 font-bold text-[10px] uppercase tracking-widest">
+                   Card <Text className="text-purple-600 font-black">{currentIndex + 1}</Text> of {studySet.length}
                 </Text>
             </View>
         </View>
 
-        {/* Card Container */}
-        <View className="flex-1 justify-center items-center">
-          <Pressable onPress={flipCard} style={{ width: width * 0.85, height: 420 }}>
-            <Animated.View style={[frontStyle]} className="w-full h-full bg-white/5 border border-white/10 rounded-[40px] items-center justify-center p-8">
-              <Text className="text-purple-500 text-[10px] font-bold uppercase tracking-[3px] mb-6">Question</Text>
-              <Text className="text-white text-2xl font-bold text-center leading-9">
+        {/* CARD CONTAINER */}
+        <Animated.View entering={FadeIn.duration(800)} className="flex-1 justify-center items-center">
+          <Pressable onPress={flipCard} style={{ width: width * 0.88, height: 450 }}>
+            {/* FRONT (QUESTION) */}
+            <Animated.View style={[frontStyle]} className="w-full h-full bg-white border border-gray-100 rounded-[45px] items-center justify-center p-10 shadow-xl shadow-purple-900/5">
+              <Text className="text-purple-600 text-[10px] font-black uppercase tracking-[4px] mb-8">Question</Text>
+              <Text className="text-[#1A1A1A] text-2xl font-bold text-center leading-10 tracking-tight">
                 {studySet[currentIndex].question}
               </Text>
-              <View className="absolute bottom-10 flex-row items-center bg-white/5 px-4 py-2 rounded-full">
-                <Rotate3d size={14} color="#A855F7" />
-                <Text className="text-gray-400 text-[10px] font-bold ml-2 uppercase tracking-tighter">Tap to flip</Text>
+              <View className="absolute bottom-12 flex-row items-center bg-gray-50 px-5 py-2.5 rounded-2xl border border-gray-100">
+                <Rotate3d size={16} color="#9333EA" />
+                <Text className="text-gray-500 text-[10px] font-bold ml-2 uppercase tracking-widest">Tap to flip</Text>
               </View>
             </Animated.View>
 
-            <Animated.View style={[backStyle]} className="w-full h-full bg-purple-600 rounded-[40px] items-center justify-center p-8 shadow-2xl shadow-purple-500/40">
-              <Text className="text-white/60 text-[10px] font-bold uppercase tracking-[3px] mb-6">Answer</Text>
-              <Text className="text-white text-2xl font-bold text-center leading-9">
+            {/* BACK (ANSWER) */}
+            <Animated.View style={[backStyle]} className="w-full h-full bg-purple-600 rounded-[45px] items-center justify-center p-10 shadow-2xl shadow-purple-900/20">
+              <Text className="text-white/60 text-[10px] font-black uppercase tracking-[4px] mb-8">Answer</Text>
+              <Text className="text-white text-2xl font-bold text-center leading-10 tracking-tight">
                 {studySet[currentIndex].answer}
               </Text>
+              <View className="absolute bottom-12 flex-row items-center bg-white/20 px-5 py-2.5 rounded-2xl">
+                <Rotate3d size={16} color="white" />
+                <Text className="text-white text-[10px] font-bold ml-2 uppercase tracking-widest">Tap to see question</Text>
+              </View>
             </Animated.View>
           </Pressable>
-        </View>
+        </Animated.View>
 
-        {/* Footer Actions */}
-        <View className="pb-16 flex-row items-center justify-center gap-x-4">
+        {/* FOOTER ACTIONS */}
+        <View className="pb-12 flex-row items-center justify-center gap-x-4">
           <Pressable 
             onPress={prevCard}
             disabled={currentIndex === 0}
-            className={`w-16 h-16 rounded-2xl items-center justify-center border border-white/10 ${currentIndex === 0 ? 'opacity-20' : 'bg-white/5'}`}
+            className={`w-16 h-16 rounded-[24px] items-center justify-center border border-gray-200 shadow-sm ${currentIndex === 0 ? 'bg-gray-50 opacity-30' : 'bg-white active:bg-gray-100'}`}
           >
-            <ChevronLeft color="white" size={28} />
+            <ChevronLeft color="#1A1A1A" size={28} />
           </Pressable>
 
           <Pressable 
             onPress={nextCard}
-            className="flex-1 h-16 bg-purple-600 rounded-2xl flex-row items-center justify-center shadow-lg shadow-purple-500/30"
+            className="flex-1 h-16 bg-purple-600 rounded-[24px] flex-row items-center justify-center shadow-lg shadow-purple-200 active:scale-[0.98]"
           >
-            <Text className="text-white font-black text-lg mr-2">
-              {currentIndex === studySet.length - 1 ? "Finish" : "Next"}
+            <Text className="text-white font-black text-lg mr-2 uppercase tracking-widest">
+              {currentIndex === studySet.length - 1 ? "Finish" : "Next Card"}
             </Text>
             <ChevronRight color="white" size={24} />
           </Pressable>

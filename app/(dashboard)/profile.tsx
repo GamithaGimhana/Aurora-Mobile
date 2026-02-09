@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ScrollView, Alert, TextInput, Modal, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { 
+  View, 
+  Text, 
+  Pressable, 
+  ScrollView, 
+  Alert, 
+  TextInput, 
+  Modal, 
+  ActivityIndicator, 
+  KeyboardAvoidingView, 
+  Platform 
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
@@ -19,21 +30,21 @@ import {
 } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeInUp, FadeIn } from "react-native-reanimated";
 
 const SettingItem = ({ icon: Icon, title, value, onPress, isDestructive = false }: any) => (
   <Pressable
     onPress={onPress}
-    className="flex-row items-center bg-white/5 border border-white/10 p-5 rounded-[24px] mb-3 active:bg-white/10"
+    className="flex-row items-center bg-white border border-gray-100 p-5 rounded-[28px] mb-3 shadow-sm active:bg-gray-50"
   >
-    <View className={`w-10 h-10 rounded-xl items-center justify-center ${isDestructive ? "bg-red-500/20" : "bg-purple-500/20"}`}>
-      <Icon size={20} color={isDestructive ? "#EF4444" : "#A855F7"} />
+    <View className={`w-10 h-10 rounded-xl items-center justify-center ${isDestructive ? "bg-red-50" : "bg-purple-50"}`}>
+      <Icon size={20} color={isDestructive ? "#EF4444" : "#9333EA"} />
     </View>
     <View className="flex-1 ml-4">
-      <Text className={`font-bold ${isDestructive ? "text-red-500" : "text-white"}`}>{title}</Text>
-      {value && <Text className="text-gray-500 text-xs mt-1">{value}</Text>}
+      <Text className={`font-bold ${isDestructive ? "text-red-500" : "text-[#1A1A1A]"}`}>{title}</Text>
+      {value && <Text className="text-gray-400 text-xs mt-0.5 font-medium">{value}</Text>}
     </View>
-    {!isDestructive && <ChevronRight size={18} color="#4B5563" />}
+    {!isDestructive && <ChevronRight size={18} color="#D1D5DB" />}
   </Pressable>
 );
 
@@ -42,11 +53,8 @@ export default function Profile() {
   const dispatch = useAppDispatch();
   const { user, loading: authLoading } = useAppSelector(state => state.auth);
 
-  // Modals visibility
   const [nameModalVisible, setNameModalVisible] = useState(false);
   const [passModalVisible, setPassModalVisible] = useState(false);
-
-  // Update states
   const [newName, setNewName] = useState(user?.name || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -62,10 +70,10 @@ export default function Profile() {
     try {
       await updateUserProfile(newName);
       if (user) dispatch(setUser({ ...user, name: newName }));
-      Alert.alert("Success", "Name updated successfully!");
+      Alert.alert("Success", "Profile updated!");
       setNameModalVisible(false);
     } catch (error: any) {
-      Alert.alert("Update Failed", error.message);
+      Alert.alert("Error", error.message);
     } finally {
       setIsUpdating(false);
     }
@@ -73,13 +81,11 @@ export default function Profile() {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) return Alert.alert("Error", "All fields are required");
-    if (newPassword.length < 6) return Alert.alert("Error", "New password must be at least 6 characters");
-
     setIsUpdating(true);
     try {
       await reauthenticate(currentPassword);
       await changePassword(newPassword);
-      Alert.alert("Success", "Password changed successfully!");
+      Alert.alert("Success", "Password updated!");
       setPassModalVisible(false);
       setCurrentPassword("");
       setNewPassword("");
@@ -91,7 +97,7 @@ export default function Profile() {
   };
 
   const handleLogout = () => {
-    Alert.alert("Sign Out", "Are you sure you want to log out?", [
+    Alert.alert("Sign Out", "Are you sure?", [
       { text: "Cancel", style: "cancel" },
       { text: "Log Out", style: "destructive", onPress: () => dispatch(logoutThunk()) }
     ]);
@@ -100,128 +106,118 @@ export default function Profile() {
   if (authLoading || !user) return null;
 
   return (
-    <View className="flex-1 bg-[#050505]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-[#FAFAFA]">
+      <StatusBar style="dark" />
       <SafeAreaView className="flex-1">
-        <ScrollView showsVerticalScrollIndicator={false} className="px-6">
+        <ScrollView showsVerticalScrollIndicator={false} className="px-8">
           
-          <Animated.View entering={FadeInUp.delay(200)} className="items-center py-10">
+          {/* Avatar Header */}
+          <Animated.View entering={FadeInUp.delay(200)} className="items-center py-12">
             <View className="relative">
-              <View className="w-28 h-28 bg-purple-600 rounded-full items-center justify-center border-4 border-white/10">
-                <Text className="text-white text-4xl font-black">
+              <View className="w-32 h-32 bg-white rounded-[45px] items-center justify-center shadow-xl shadow-purple-900/10 border border-purple-50">
+                <Text className="text-purple-600 text-5xl font-black">
                   {user.name?.charAt(0).toUpperCase()}
                 </Text>
               </View>
               <Pressable 
                 onPress={() => setNameModalVisible(true)}
-                className="absolute bottom-0 right-0 bg-white w-8 h-8 rounded-full items-center justify-center border-2 border-[#050505]"
+                className="absolute bottom-0 right-0 bg-purple-600 w-10 h-10 rounded-2xl items-center justify-center border-4 border-[#FAFAFA] shadow-sm"
               >
-                <Edit3 size={14} color="black" />
+                <Edit3 size={16} color="white" />
               </Pressable>
             </View>
-            <Text className="text-white text-3xl font-black mt-4 tracking-tighter">{user.name}</Text>
-            <Text className="text-gray-500 font-medium">Student • {user.email}</Text>
+            <Text className="text-[#1A1A1A] text-3xl font-black mt-6 tracking-tighter">{user.name}</Text>
+            <View className="bg-purple-100 px-3 py-1 rounded-lg mt-2">
+               <Text className="text-purple-700 text-xs font-bold uppercase tracking-widest">Premium Student</Text>
+            </View>
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(400)}>
-            <Text className="text-gray-600 text-[10px] font-bold uppercase tracking-[2px] mb-4 ml-1">Account</Text>
-            <SettingItem icon={User} title="Edit Name" value={user.name} onPress={() => setNameModalVisible(true)} />
+          {/* Account Section */}
+          <Animated.View entering={FadeInDown.delay(400)} className="mb-8">
+            <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] mb-4 ml-2">Personal Identity</Text>
+            <SettingItem icon={User} title="Display Name" value={user.name} onPress={() => setNameModalVisible(true)} />
             <SettingItem icon={Mail} title="Email Address" value={user.email} />
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(600)} className="mt-6">
-            <Text className="text-gray-600 text-[10px] font-bold uppercase tracking-[2px] mb-4 ml-1">Security</Text>
-            <SettingItem icon={ShieldCheck} title="Change Password" value="Update your security" onPress={() => setPassModalVisible(true)} />
+          {/* Security Section */}
+          <Animated.View entering={FadeInDown.delay(600)}>
+            <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-[2px] mb-4 ml-2">Security & Privacy</Text>
+            <SettingItem icon={ShieldCheck} title="Update Password" value="Keep your account secure" onPress={() => setPassModalVisible(true)} />
             <SettingItem icon={LogOut} title="Sign Out" isDestructive onPress={handleLogout} />
           </Animated.View>
 
-          <View className="items-center py-10">
-            <Text className="text-gray-700 text-[10px] font-bold uppercase tracking-widest">Aurora v1.0.0 • 2026</Text>
+          <View className="items-center pt-12 pb-8">
+            <Text className="text-gray-300 text-[10px] font-bold uppercase tracking-[3px]">Aurora v1.0.0 • 2026</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
 
-      {/* --- NAME UPDATE MODAL --- */}
-      <Modal animationType="slide" transparent={true} visible={nameModalVisible}>
-        <View className="flex-1 justify-end bg-black/60">
-          <View className="bg-[#121212] rounded-t-[40px] p-8 border-t border-white/10">
-            <View className="flex-row justify-between items-center mb-8">
-              <Text className="text-white text-2xl font-black tracking-tight">Edit Name</Text>
-              <Pressable onPress={() => setNameModalVisible(false)} className="bg-white/10 p-2 rounded-full active:opacity-50">
-                <X size={20} color="white" />
+      {/* --- CENTERED NAME MODAL --- */}
+      <Modal animationType="fade" transparent={true} visible={nameModalVisible}>
+        <View className="flex-1 justify-center items-center bg-[#1A1A1A]/40 px-8">
+          <Animated.View entering={FadeIn} className="bg-white w-full rounded-[40px] p-8 shadow-2xl">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-[#1A1A1A] text-2xl font-black">Edit Name</Text>
+              <Pressable onPress={() => setNameModalVisible(false)} className="bg-gray-100 p-2 rounded-full">
+                <X size={18} color="#6B7280" />
               </Pressable>
             </View>
 
-            <View className="mb-8">
-              <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">Full Name</Text>
-              <View className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 flex-row items-center">
-                <User size={18} color="#A855F7" className="mr-3" />
-                <TextInput
-                  value={newName}
-                  onChangeText={setNewName}
-                  placeholder="Enter Name"
-                  placeholderTextColor="#4B5563"
-                  className="text-white text-base font-bold flex-1 ml-2"
-                />
-              </View>
+            <View className="bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 flex-row items-center mb-8">
+              <User size={18} color="#9333EA" />
+              <TextInput
+                value={newName}
+                onChangeText={setNewName}
+                placeholder="Full Name"
+                placeholderTextColor="#9CA3AF"
+                className="text-[#1A1A1A] text-base font-bold flex-1 ml-3"
+              />
             </View>
 
             <Pressable
               onPress={handleUpdateName}
               disabled={isUpdating}
-              className="bg-purple-600 h-16 rounded-2xl flex-row items-center justify-center active:opacity-90"
+              className="bg-purple-600 h-14 rounded-2xl flex-row items-center justify-center shadow-lg shadow-purple-200"
             >
-              {isUpdating ? <ActivityIndicator color="white" /> : (
-                <>
-                  <Text className="text-white font-bold text-lg mr-2">Update Name</Text>
-                  <Check size={20} color="white" />
-                </>
-              )}
+              {isUpdating ? <ActivityIndicator color="white" /> : <Text className="text-white font-bold text-lg">Save Profile</Text>}
             </Pressable>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
 
-      {/* --- PASSWORD CHANGE MODAL --- */}
-      <Modal animationType="slide" transparent={true} visible={passModalVisible}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
-          <View className="flex-1 justify-end bg-black/60">
-            <View className="bg-[#121212] rounded-t-[40px] p-8 border-t border-white/10">
-              <View className="flex-row justify-between items-center mb-8">
-                <Text className="text-white text-2xl font-black tracking-tight">Security</Text>
-                <Pressable onPress={() => setPassModalVisible(false)} className="bg-white/10 p-2 rounded-full active:opacity-50">
-                  <X size={20} color="white" />
+      {/* --- CENTERED PASSWORD MODAL --- */}
+      <Modal animationType="fade" transparent={true} visible={passModalVisible}>
+        <View className="flex-1 justify-center items-center bg-[#1A1A1A]/40 px-8">
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="w-full">
+            <Animated.View entering={FadeIn} className="bg-white w-full rounded-[40px] p-8 shadow-2xl">
+              <View className="flex-row justify-between items-center mb-6">
+                <Text className="text-[#1A1A1A] text-2xl font-black">Security</Text>
+                <Pressable onPress={() => setPassModalVisible(false)} className="bg-gray-100 p-2 rounded-full">
+                  <X size={18} color="#6B7280" />
                 </Pressable>
               </View>
 
-              {/* Current Password */}
-              <View className="mb-4">
-                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">Current Password</Text>
-                <View className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 flex-row items-center">
-                  <KeyRound size={18} color="#A855F7" className="mr-3" />
+              <View className="gap-y-4 mb-8">
+                <View className="bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 flex-row items-center">
+                  <KeyRound size={18} color="#9333EA" />
                   <TextInput
                     value={currentPassword}
                     onChangeText={setCurrentPassword}
-                    placeholder="••••••••"
-                    placeholderTextColor="#4B5563"
+                    placeholder="Current Password"
+                    placeholderTextColor="#9CA3AF"
                     secureTextEntry
-                    className="text-white text-base font-bold flex-1 ml-2"
+                    className="text-[#1A1A1A] text-base font-bold flex-1 ml-3"
                   />
                 </View>
-              </View>
-
-              {/* New Password */}
-              <View className="mb-8">
-                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-[2px] mb-3 ml-1">New Password</Text>
-                <View className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 flex-row items-center">
-                  <Lock size={18} color="#A855F7" className="mr-3" />
+                <View className="bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 flex-row items-center">
+                  <Lock size={18} color="#9333EA" />
                   <TextInput
                     value={newPassword}
                     onChangeText={setNewPassword}
-                    placeholder="••••••••"
-                    placeholderTextColor="#4B5563"
+                    placeholder="New Password"
+                    placeholderTextColor="#9CA3AF"
                     secureTextEntry
-                    className="text-white text-base font-bold flex-1 ml-2"
+                    className="text-[#1A1A1A] text-base font-bold flex-1 ml-3"
                   />
                 </View>
               </View>
@@ -229,18 +225,13 @@ export default function Profile() {
               <Pressable
                 onPress={handleChangePassword}
                 disabled={isUpdating}
-                className="bg-purple-600 h-16 rounded-2xl flex-row items-center justify-center active:opacity-90"
+                className="bg-purple-600 h-14 rounded-2xl flex-row items-center justify-center shadow-lg shadow-purple-200"
               >
-                {isUpdating ? <ActivityIndicator color="white" /> : (
-                  <>
-                    <Text className="text-white font-bold text-lg mr-2">Change Password</Text>
-                    <ShieldCheck size={20} color="white" />
-                  </>
-                )}
+                {isUpdating ? <ActivityIndicator color="white" /> : <Text className="text-white font-bold text-lg">Update Security</Text>}
               </Pressable>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
+            </Animated.View>
+          </KeyboardAvoidingView>
+        </View>
       </Modal>
     </View>
   );

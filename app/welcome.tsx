@@ -16,7 +16,6 @@ const { width } = Dimensions.get("window");
 export default function Welcome() {
   const router = useRouter();
   
-  // Animation Values
   const opacity = useSharedValue(0);
 
   useEffect(() => {
@@ -29,11 +28,11 @@ export default function Welcome() {
   }));
 
   return (
-    <View className="flex-1 bg-[#050505]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-[#FAFAFA]">
+      <StatusBar style="dark" />
       
-      {/* Background Glow Effect */}
-      <View className="absolute top-[-100] right-[-100] w-80 h-80 bg-purple-900/20 rounded-full blur-3xl" />
+      {/* Background Glow Effect - Adjusted for Light Mode */}
+      <View className="absolute top-[-50] right-[-50] w-96 h-96 bg-purple-200/40 rounded-full blur-3xl" />
       
       <SafeAreaView className="flex-1 px-8 justify-between pb-10">
         
@@ -47,9 +46,9 @@ export default function Welcome() {
             />
           </Animated.View>
           
-          <View className="bg-purple-900/30 px-4 py-1 rounded-full border border-purple-500/30 flex-row items-center">
-            <Sparkles size={12} color="#A855F7" />
-            <Text className="text-purple-400 text-[10px] font-bold tracking-widest uppercase ml-2">
+          <View className="bg-purple-100 px-4 py-1.5 rounded-full border border-purple-200 flex-row items-center">
+            <Sparkles size={12} color="#9333EA" />
+            <Text className="text-purple-700 text-[10px] font-bold tracking-widest uppercase ml-2">
               Next-Gen Learning
             </Text>
           </View>
@@ -59,16 +58,16 @@ export default function Welcome() {
         <View>
           <Animated.Text 
             entering={FadeInUp.delay(400).duration(800)}
-            className="text-white text-5xl font-black tracking-tighter leading-[54px]"
+            className="text-[#1A1A1A] text-5xl font-black tracking-tighter leading-[54px]"
           >
             Aurora.{"\n"}
-            <Text className="text-purple-500">Master </Text> 
+            <Text className="text-purple-600">Master </Text> 
             Everything.
           </Animated.Text>
           
           <Animated.Text 
             entering={FadeInUp.delay(600).duration(800)}
-            className="text-gray-400 text-lg mt-4 leading-7"
+            className="text-gray-500 text-lg mt-4 leading-7 font-medium"
           >
             A seamless ecosystem for notes, flashcards, and live learning. Designed for the modern student.
           </Animated.Text>
@@ -78,7 +77,7 @@ export default function Welcome() {
         <Animated.View entering={FadeInUp.delay(800).duration(800)} className="gap-y-4">
           <Pressable 
             onPress={() => router.push("/(auth)/register")}
-            className="bg-purple-600 h-16 rounded-2xl flex-row items-center justify-center shadow-lg shadow-purple-500/20 active:opacity-90"
+            className="bg-purple-600 h-16 rounded-2xl flex-row items-center justify-center shadow-md active:scale-[0.98]"
           >
             <Text className="text-white font-bold text-lg mr-2">Get Started</Text>
             <ArrowRight size={20} color="white" />
@@ -86,13 +85,13 @@ export default function Welcome() {
 
           <Pressable 
             onPress={() => router.push("/(auth)/login")}
-            className="h-16 rounded-2xl items-center justify-center border border-white/10 bg-white/5 active:bg-white/10"
+            className="h-16 rounded-2xl items-center justify-center border border-gray-200 bg-white shadow-sm active:bg-gray-50 active:scale-[0.98]"
           >
-            <Text className="text-white font-semibold text-lg">Sign In</Text>
+            <Text className="text-purple-700 font-bold text-lg">Sign In</Text>
           </Pressable>
 
-          <Text className="text-gray-500 text-center text-xs mt-2 tracking-widest uppercase">
-            © 2026 Aurora Education
+          <Text className="text-gray-400 text-center text-[10px] mt-2 font-bold tracking-widest uppercase">
+            © 2026 Aurora Education Inc.
           </Text>
         </Animated.View>
 
