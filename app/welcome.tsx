@@ -40,7 +40,8 @@ export default function Welcome() {
         <Animated.View entering={FadeInUp.delay(200).duration(800)} className="items-center mt-12">
           <Animated.View style={animatedLogoStyle} className="mb-6">
             <Image 
-              source={require("../assets/images/Aurora-logo.png")} 
+              // source={require("../assets/images/Aurora-logo.png")} 
+              source={{ uri: "https://res.cloudinary.com/dg11uvapu/image/upload/v1770646537/Aurora-logo_ncjip3.png" }} 
               className="w-32 h-32"
               resizeMode="contain"
             />

@@ -88,7 +88,8 @@ const Register = () => {
           </Pressable>
           
           <Image 
-            source={require("../../assets/images/Aurora-logo.png")} 
+            // source={require("../../assets/images/Aurora-logo.png")} 
+            source={{ uri: "https://res.cloudinary.com/dg11uvapu/image/upload/v1770646537/Aurora-logo_ncjip3.png" }} 
             className="w-10 h-10"
             resizeMode="contain"
           />
