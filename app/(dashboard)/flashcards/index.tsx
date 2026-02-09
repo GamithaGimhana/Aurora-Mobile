@@ -6,7 +6,8 @@ import {
   ScrollView, 
   ActivityIndicator, 
   RefreshControl,
-  Alert 
+  Alert,
+  TextInput
 } from "react-native";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -24,14 +25,19 @@ import {
   Trash2,
   Edit3,
   Layers,
-  FileText
+  FileText,
+  Search,
+  X,
+  SearchX
 } from "lucide-react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { SkeletonCard } from "@/src/components/SkeletonLoader";
 
 export default function FlashcardsIndex() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [activeSection, setActiveSection] = useState<'sets' | 'cards'>('sets');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Theme and Data selectors
   const { darkMode } = useAppSelector((state) => state.theme);
@@ -44,8 +50,14 @@ export default function FlashcardsIndex() {
     }
   }, [user]);
 
-  // Group cards by title to create "Study Sets"
-  const studySets = cards.reduce((acc: any, card) => {
+  // --- FILTERING LOGIC ---
+  const filteredCards = cards.filter(card => 
+    card.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    card.question.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Group filtered cards by title to create "Study Sets"
+  const studySets = filteredCards.reduce((acc: any, card) => {
     const title = card.title || "Uncategorized";
     if (!acc[title]) {
       acc[title] = { title, count: 0, lastCreated: card.createdAt };
@@ -83,35 +95,53 @@ export default function FlashcardsIndex() {
   const secondaryText = darkMode ? "text-gray-400" : "text-gray-500";
   const switcherBg = darkMode ? "bg-white/5" : "bg-white";
   const actionContainerBg = darkMode ? "bg-white/[0.02]" : "bg-gray-50/30";
+  const searchBarBg = darkMode ? "bg-white/5" : "bg-white";
 
   return (
     <View className={`flex-1 ${bgColor}`}>
       <StatusBar style={darkMode ? "light" : "dark"} />
-      
-      {/* Dynamic Background Glow */}
       <View className={`absolute top-[-50] left-[-50] w-96 h-96 rounded-full blur-3xl ${
         darkMode ? "bg-purple-900/15" : "bg-purple-100/40"
       }`} />
 
       <SafeAreaView className="flex-1">
         {/* HEADER */}
-        <View className="px-8 flex-row items-center justify-between py-6">
-          <View>
-            <Text className={`${primaryText} text-3xl font-black tracking-tighter`}>Aurora Flash</Text>
-            <Text className="text-purple-600 text-[10px] font-bold uppercase tracking-widest mt-1">
-              {activeSection === 'sets' ? `${studySetArray.length} Collections` : `${cards.length} Total Cards`}
-            </Text>
+        <View className="px-8 pt-6 pb-2">
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className={`${primaryText} text-3xl font-black tracking-tighter`}>Aurora Flash</Text>
+              <Text className="text-purple-600 text-[10px] font-bold uppercase tracking-widest mt-1">
+                {activeSection === 'sets' ? `${studySetArray.length} Collections` : `${filteredCards.length} Cards Found`}
+              </Text>
+            </View>
+            <Pressable 
+              onPress={() => router.push("/(dashboard)/flashcards/form")}
+              className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg shadow-purple-500/20 active:scale-90"
+            >
+              <Plus size={24} color="white" strokeWidth={3} />
+            </Pressable>
           </View>
-          <Pressable 
-            onPress={() => router.push({ pathname: "/(dashboard)/flashcards/form", params: {} })}
-            className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg shadow-purple-500/20 active:scale-90"
-          >
-            <Plus size={24} color="white" strokeWidth={3} />
-          </Pressable>
+
+          {/* SEARCH BAR */}
+          <Animated.View entering={FadeInUp.delay(200)} className={`flex-row items-center mt-6 px-4 h-14 rounded-2xl border ${cardBorder} ${searchBarBg} shadow-sm`}>
+            <Search size={18} color={darkMode ? "#6B7280" : "#9CA3AF"} />
+            <TextInput
+              placeholder="Search sets or questions..."
+              placeholderTextColor={darkMode ? "#6B7280" : "#9CA3AF"}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              className={`flex-1 ml-3 font-bold ${primaryText}`}
+            />
+            {searchQuery !== "" && (
+              <Pressable onPress={() => setSearchQuery("")} className="p-1">
+                <X size={18} color={darkMode ? "#A855F7" : "#9333EA"} />
+              </Pressable>
+            )}
+          </Animated.View>
         </View>
 
         {/* SECTION SWITCHER */}
-        <View className="px-8 mb-6">
+        <View className="px-8 mt-4 mb-4">
           <View className={`${switcherBg} p-1 rounded-2xl flex-row border ${cardBorder} shadow-sm`}>
             <Pressable 
               onPress={() => setActiveSection('sets')}
@@ -138,23 +168,21 @@ export default function FlashcardsIndex() {
             <RefreshControl refreshing={loading && cards.length > 0} onRefresh={onRefresh} tintColor="#9333EA" />
           }
         >
-          {loading && cards.length === 0 ? (
-            <View className="py-20 items-center justify-center">
-              <ActivityIndicator size="large" color="#9333EA" />
-            </View>
-          ) : cards.length === 0 ? (
+          {loading ? (
+            [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
+          ) : filteredCards.length === 0 ? (
             <Animated.View entering={FadeInUp} className="py-20 items-center justify-center">
               <View className={`w-24 h-24 rounded-[35px] items-center justify-center mb-6 shadow-sm border ${cardBorder} ${cardBg}`}>
-                <BrainCircuit size={40} color={darkMode ? "#4B5563" : "#D1D5DB"} />
+                <SearchX size={40} color={darkMode ? "#4B5563" : "#D1D5DB"} />
               </View>
-              <Text className={`${primaryText} text-xl font-bold`}>No Data Yet</Text>
-              <Text className="text-gray-400 text-center mt-2 px-6 font-medium">Create your first set of cards to begin active recall.</Text>
+              <Text className={`${primaryText} text-xl font-bold`}>No matches found</Text>
+              <Text className="text-gray-400 text-center mt-2 px-6 font-medium">Try a different keyword or create a new flashcard.</Text>
             </Animated.View>
           ) : (
             <>
               {/* STUDY SETS VIEW */}
               {activeSection === 'sets' && studySetArray.map((set: any, index: number) => (
-                <Animated.View key={set.title} entering={FadeInDown.delay(index * 100)}>
+                <Animated.View key={set.title} entering={FadeInDown.delay(index * 50)}>
                   <Pressable
                     onPress={() => router.push({ pathname: "/(dashboard)/flashcards/study", params: { title: set.title } })}
                     className={`${cardBg} border ${cardBorder} rounded-[32px] mb-4 p-6 shadow-sm shadow-purple-900/5 active:opacity-80`}
@@ -180,8 +208,8 @@ export default function FlashcardsIndex() {
               ))}
 
               {/* INDIVIDUAL CARDS VIEW */}
-              {activeSection === 'cards' && cards.map((card, index) => (
-                <Animated.View key={card.id} entering={FadeInDown.delay(index * 50)}>
+              {activeSection === 'cards' && filteredCards.map((card, index) => (
+                <Animated.View key={card.id} entering={FadeInDown.delay(index * 30)}>
                   <View className={`${cardBg} border ${cardBorder} rounded-[24px] mb-3 overflow-hidden shadow-sm shadow-purple-900/5`}>
                     <View className="p-5 flex-row items-center">
                       <View className="w-2 h-2 bg-purple-500 rounded-full mr-4" />

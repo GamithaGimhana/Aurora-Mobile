@@ -1,17 +1,36 @@
-import React, { useEffect } from "react";
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { 
+  View, 
+  Text, 
+  Pressable, 
+  ScrollView, 
+  Alert, 
+  TextInput 
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useAppDispatch } from "@/src/hooks/useAppDispatch";
 import { useAppSelector } from "@/src/hooks/useAppSelector";
 import { fetchNotesThunk, deleteNoteThunk } from "@/src/redux/slices/notesSlice";
-import { Plus, BookOpen, Clock, ChevronRight, FileText, Trash2, Edit3 } from "lucide-react-native";
+import { 
+  Plus, 
+  BookOpen, 
+  Clock, 
+  ChevronRight, 
+  Search, 
+  X, 
+  Trash2, 
+  Edit3, 
+  SearchX 
+} from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { SkeletonCard } from "@/src/components/SkeletonLoader"; // Assuming path based on previous recommendation
 
 export default function NotesIndex() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Theme and Data selectors
   const { darkMode } = useAppSelector((state) => state.theme);
@@ -23,6 +42,11 @@ export default function NotesIndex() {
       dispatch(fetchNotesThunk());
     }
   }, [user]);
+
+  // Search Logic
+  const filteredNotes = notes.filter(note => 
+    note.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const confirmDelete = (id: string, title: string) => {
     Alert.alert(
@@ -46,72 +70,75 @@ export default function NotesIndex() {
   const primaryText = darkMode ? "text-white" : "text-[#1A1A1A]";
   const secondaryText = darkMode ? "text-gray-500" : "text-gray-400";
   const actionContainerBg = darkMode ? "bg-white/[0.02]" : "bg-gray-50/30";
+  const searchBarBg = darkMode ? "bg-white/5" : "bg-white";
 
   return (
     <View className={`flex-1 ${bgColor}`}>
       <StatusBar style={darkMode ? "light" : "dark"} />
       
-      {/* Dynamic Background Decor */}
       <View className={`absolute top-[-50] left-[-50] w-96 h-96 rounded-full blur-3xl ${
         darkMode ? "bg-purple-900/20" : "bg-purple-100/40"
       }`} />
 
       <SafeAreaView className="flex-1">
         {/* HEADER */}
-        <View className="px-8 flex-row items-center justify-between py-6">
-          <View>
-            <Text className={`${primaryText} text-3xl font-black tracking-tighter`}>My Notes</Text>
-            <View className="flex-row items-center mt-1">
-               <View className="w-2 h-2 bg-purple-500 rounded-full mr-2" />
-               <Text className={`${secondaryText} text-xs font-bold uppercase tracking-widest`}>
-                 {notes.length} Documents
-               </Text>
+        <View className="px-8 pt-6 pb-2">
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className={`${primaryText} text-3xl font-black tracking-tighter`}>My Notes</Text>
+              <Text className={`${secondaryText} text-xs font-bold uppercase tracking-widest mt-1`}>
+                {notes.length} Collections
+              </Text>
             </View>
+            <Pressable 
+              onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: {} })}
+              className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg shadow-purple-500/20 active:scale-90"
+            >
+              <Plus size={24} color="white" strokeWidth={3} />
+            </Pressable>
           </View>
-          <Pressable 
-            onPress={() => router.push("/(dashboard)/notes/form")}
-            className="w-12 h-12 bg-purple-600 rounded-2xl items-center justify-center shadow-lg shadow-purple-500/20 active:scale-90"
-          >
-            <Plus size={24} color="white" strokeWidth={3} />
-          </Pressable>
+
+          {/* SEARCH BAR */}
+          <Animated.View entering={FadeInUp.delay(200)} className={`flex-row items-center mt-6 px-4 h-14 rounded-2xl border ${cardBorder} ${searchBarBg} shadow-sm shadow-black/5`}>
+            <Search size={18} color={darkMode ? "#6B7280" : "#9CA3AF"} />
+            <TextInput
+              placeholder="Search by title..."
+              placeholderTextColor={darkMode ? "#6B7280" : "#9CA3AF"}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              className={`flex-1 ml-3 font-bold ${primaryText}`}
+            />
+            {searchQuery !== "" && (
+              <Pressable onPress={() => setSearchQuery("")} className="p-1">
+                <X size={18} color={darkMode ? "#A855F7" : "#9333EA"} />
+              </Pressable>
+            )}
+          </Animated.View>
         </View>
 
         {/* CONTENT */}
         <ScrollView 
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 100 }}
         >
           {loading ? (
-            <View className="py-20">
-              <ActivityIndicator color={darkMode ? "#A855F7" : "#9333EA"} size="large" />
-            </View>
-          ) : notes.length === 0 ? (
+            // Show Skeleton Loaders while fetching
+            [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
+          ) : filteredNotes.length === 0 ? (
             <Animated.View entering={FadeInUp} className="py-20 items-center justify-center">
-              <View className={`w-24 h-24 rounded-[35px] items-center justify-center mb-6 shadow-sm border ${
-                darkMode ? "bg-white/5 border-white/10" : "bg-white border-gray-100"
-              }`}>
-                <FileText size={40} color={darkMode ? "#4B5563" : "#D1D5DB"} />
+              <View className={`w-24 h-24 rounded-[35px] items-center justify-center mb-6 shadow-sm border ${cardBorder} ${cardBg}`}>
+                <SearchX size={40} color={darkMode ? "#4B5563" : "#D1D5DB"} />
               </View>
-              <Text className={`${primaryText} text-xl font-bold`}>Your library is empty</Text>
+              <Text className={`${primaryText} text-xl font-bold`}>No notes found</Text>
               <Text className="text-gray-400 text-center mt-2 px-10 font-medium">
-                Create your first smart note to begin your journey.
+                Try searching for a different title or create a new note.
               </Text>
-              <Pressable 
-                onPress={() => router.push("/(dashboard)/notes/form")}
-                className={`mt-8 px-8 py-4 rounded-2xl border ${
-                  darkMode ? "bg-purple-900/20 border-purple-500/30" : "bg-purple-50 border-purple-100"
-                }`}
-              >
-                <Text className="text-purple-500 font-black uppercase tracking-widest text-xs">
-                  Create First Note
-                </Text>
-              </Pressable>
             </Animated.View>
           ) : (
-            notes.map((note, index) => (
+            filteredNotes.map((note, index) => (
               <Animated.View 
                 key={note.id} 
-                entering={FadeInDown.delay(index * 100).duration(500)}
+                entering={FadeInDown.delay(index * 50).duration(400)}
               >
                 <View className={`${cardBg} border ${cardBorder} rounded-[32px] mb-5 overflow-hidden shadow-sm shadow-purple-900/5`}>
                   <Pressable
@@ -138,7 +165,6 @@ export default function NotesIndex() {
                     <ChevronRight size={18} color={darkMode ? "#374151" : "#D1D5DB"} />
                   </Pressable>
 
-                  {/* QUICK ACTION BAR */}
                   <View className={`flex-row border-t ${darkMode ? "border-white/5" : "border-gray-50"} ${actionContainerBg}`}>
                     <Pressable 
                       onPress={() => router.push({ pathname: "/(dashboard)/notes/form", params: { noteId: note.id } })}
