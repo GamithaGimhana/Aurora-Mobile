@@ -20,25 +20,23 @@ Download the latest Android APK:
 
 <div align="center">
 
-### Welcome & Authentication
-<p>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/welcome_k1kho6.jpg" width="250" alt="Welcome Screen"/>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/login_jgvwoi.jpg" width="250" alt="Login Screen"/>
-</p>
+### 🎨 Welcome & Authentication
 
-### Main Features
-<p>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/home_zthmir.jpg" width="250" alt="Home Screen"/>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/notes_zqrwwh.jpg" width="250" alt="Notes Screen"/>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/flashcards_i5i9ro.jpg" width="250" alt="Flashcards Screen"/>
-</p>
+| Welcome Screen | Login Screen |
+|:---:|:---:|
+| <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/welcome_k1kho6.jpg" width="300" alt="Welcome Screen"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/login_jgvwoi.jpg" width="300" alt="Login Screen"/> |
 
-### Study & Profile
-<p>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/studymode_qe656k.jpg" width="250" alt="Study Mode"/>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/profilelight_b3ty3c.jpg" width="250" alt="Profile Light Theme"/>
-  <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/profiledark_x94f90.jpg" width="250" alt="Profile Dark Theme"/>
-</p>
+### 📱 Main Features
+
+| Home | Notes | Flashcards |
+|:---:|:---:|:---:|
+| <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/home_zthmir.jpg" width="250" alt="Home Screen"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/notes_zqrwwh.jpg" width="250" alt="Notes Screen"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/flashcards_i5i9ro.jpg" width="250" alt="Flashcards Screen"/> |
+
+### 🎯 Study Mode & Themes
+
+| Study Mode | Profile (Light) | Profile (Dark) |
+|:---:|:---:|:---:|
+| <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/studymode_qe656k.jpg" width="250" alt="Study Mode"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/profilelight_b3ty3c.jpg" width="250" alt="Profile Light Theme"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/profiledark_x94f90.jpg" width="250" alt="Profile Dark Theme"/> |
 
 </div>
 
