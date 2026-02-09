@@ -5,6 +5,7 @@ import { View } from "react-native";
 
 export default function DashboardLayout() {
   const { user, loading } = useAppSelector(state => state.auth);
+  const { darkMode } = useAppSelector(state => state.theme); // Consuming theme state
 
   if (loading) return null;
 
@@ -17,16 +18,16 @@ export default function DashboardLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#FFFFFF", // Clean light background
-          borderTopWidth: 1,
-          borderTopColor: "#F3F4F6", // Subtle separator
+          backgroundColor: darkMode ? "#0A0A0A" : "#FFFFFF", // Contextual background
+          borderTopWidth: darkMode ? 0 : 1,
+          borderTopColor: "#F3F4F6",
           elevation: 0,
           height: 85,
           paddingBottom: 25,
           paddingTop: 10,
         },
-        tabBarActiveTintColor: "#9333EA", // Vibrant Purple-600
-        tabBarInactiveTintColor: "#9CA3AF", // Gray-400
+        tabBarActiveTintColor: darkMode ? "#A855F7" : "#9333EA",
+        tabBarInactiveTintColor: "#9CA3AF",
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "700",
@@ -39,7 +40,7 @@ export default function DashboardLayout() {
         options={{ 
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-purple-100 p-2 rounded-xl" : "p-2"}>
+            <View className={focused ? (darkMode ? "bg-purple-500/20 p-2 rounded-xl" : "bg-purple-100 p-2 rounded-xl") : "p-2"}>
                <Home size={22} color={color} />
             </View>
           )
@@ -51,7 +52,7 @@ export default function DashboardLayout() {
         options={{ 
           title: "Notes",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-purple-100 p-2 rounded-xl" : "p-2"}>
+            <View className={focused ? (darkMode ? "bg-purple-500/20 p-2 rounded-xl" : "bg-purple-100 p-2 rounded-xl") : "p-2"}>
                <BookOpen size={22} color={color} />
             </View>
           )
@@ -63,7 +64,7 @@ export default function DashboardLayout() {
         options={{ 
           title: "Flash",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-purple-100 p-2 rounded-xl" : "p-2"}>
+            <View className={focused ? (darkMode ? "bg-purple-500/20 p-2 rounded-xl" : "bg-purple-100 p-2 rounded-xl") : "p-2"}>
                <Layers size={22} color={color} />
             </View>
           )
@@ -75,7 +76,7 @@ export default function DashboardLayout() {
         options={{ 
           title: "Profile",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-purple-100 p-2 rounded-xl" : "p-2"}>
+            <View className={focused ? (darkMode ? "bg-purple-500/20 p-2 rounded-xl" : "bg-purple-100 p-2 rounded-xl") : "p-2"}>
                <User size={22} color={color} />
             </View>
           )
