@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit"
 import authReducer from "./slices/authSlice"
 import notesReducer from "./slices/notesSlice"
 import flashcardsReducer from "./slices/flashcardsSlice"
+import themeReducer from "./slices/themeSlice"
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     notes: notesReducer,
-    flashcards: flashcardsReducer
+    flashcards: flashcardsReducer,
+    theme: themeReducer,
   }
 })
 
