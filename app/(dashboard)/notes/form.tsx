@@ -21,8 +21,8 @@ import {
   fetchNoteByIdThunk,
   selectNoteById,
 } from "@/src/redux/slices/notesSlice";
-import { ChevronLeft, Check, Type, AlignLeft } from "lucide-react-native";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { ChevronLeft, Check, Type, AlignLeft, AlertCircle, X } from "lucide-react-native";
+import Animated, { FadeInDown, FadeInUp, FadeIn } from "react-native-reanimated";
 
 export default function NoteForm() {
   const router = useRouter();
@@ -38,6 +38,7 @@ export default function NoteForm() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [formError, setFormError] = useState<string | null>(null); // NEW: Error state
 
   // Sync state with note data for editing
   useEffect(() => {
@@ -59,9 +60,11 @@ export default function NoteForm() {
     if (loading) return;
 
     if (!title.trim() || !content.trim()) {
-      Alert.alert("Validation Error", "Please provide both a title and content.");
+      setFormError("Both a title and content are required to save your note.");
       return;
     }
+
+    setFormError(null);
 
     try {
       if (noteId) {
@@ -73,7 +76,7 @@ export default function NoteForm() {
       }
       router.back();
     } catch (err: any) {
-      Alert.alert("Error", err || "Something went wrong while saving.");
+      setFormError(err || "Something went wrong while saving your note.");
     }
   };
 
@@ -130,8 +133,22 @@ export default function NoteForm() {
 
           <ScrollView 
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 20 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 10 }}
           >
+            {/* ERROR MESSAGE DISPLAY */}
+            {formError && (
+              <Animated.View 
+                entering={FadeIn.duration(400)} 
+                className="flex-row items-center bg-red-500/10 p-4 rounded-2xl mb-6 border border-red-500/20"
+              >
+                <AlertCircle size={20} color="#EF4444" />
+                <Text className="text-red-500 text-sm font-bold ml-3 flex-1">{formError}</Text>
+                <Pressable onPress={() => setFormError(null)}>
+                  <X size={16} color="#EF4444" />
+                </Pressable>
+              </Animated.View>
+            )}
+
             {/* TITLE INPUT */}
             <Animated.View entering={FadeInUp.delay(200)} className="mb-6">
               <View className="flex-row items-center mb-3 ml-1">
@@ -140,10 +157,10 @@ export default function NoteForm() {
                   Note Title
                 </Text>
               </View>
-              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 shadow-sm ${darkMode ? "" : "shadow-purple-900/5"}`}>
+              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 shadow-sm shadow-black/5`}>
                 <TextInput
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(val) => {setTitle(val); setFormError(null);}}
                   placeholder="e.g. Database Fundamentals"
                   placeholderTextColor={placeholderColor}
                   className={`${primaryText} text-lg font-bold`}
@@ -159,10 +176,10 @@ export default function NoteForm() {
                   Content
                 </Text>
               </View>
-              <View className={`${inputBg} border ${inputBorder} rounded-[35px] px-6 py-6 h-80 shadow-sm ${darkMode ? "" : "shadow-purple-900/5"}`}>
+              <View className={`${inputBg} border ${inputBorder} rounded-[35px] px-6 py-6 h-80 shadow-sm shadow-black/5`}>
                 <TextInput
                   value={content}
-                  onChangeText={setContent}
+                  onChangeText={(val) => {setContent(val); setFormError(null);}}
                   placeholder="Start writing your thoughts..."
                   placeholderTextColor={placeholderColor}
                   multiline
@@ -172,7 +189,7 @@ export default function NoteForm() {
               </View>
             </Animated.View>
 
-            {/* PRIMARY SAVE BUTTON */}
+            {/* ACTION BUTTON */}
             <Animated.View entering={FadeInDown.delay(600)} className="pb-12">
               <Pressable
                 onPress={handleSubmit}
@@ -181,7 +198,7 @@ export default function NoteForm() {
                   loading 
                     ? (darkMode ? "bg-gray-800" : "bg-gray-400") 
                     : (darkMode ? "bg-purple-600 shadow-purple-900/40" : "bg-purple-600 shadow-purple-200")
-                }`}
+                } active:scale-95`}
               >
                 {loading ? (
                   <ActivityIndicator color="white" />

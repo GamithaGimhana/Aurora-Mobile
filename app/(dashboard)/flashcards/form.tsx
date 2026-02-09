@@ -21,8 +21,17 @@ import {
   fetchFlashcardByIdThunk,
   selectFlashcardById,
 } from "@/src/redux/slices/flashcardsSlice";
-import { ChevronLeft, Check, BrainCircuit, HelpCircle, MessageSquare, Book } from "lucide-react-native";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { 
+  ChevronLeft, 
+  Check, 
+  BrainCircuit, 
+  HelpCircle, 
+  MessageSquare, 
+  Book, 
+  AlertCircle,
+  X 
+} from "lucide-react-native";
+import Animated, { FadeInDown, FadeInUp, FadeIn } from "react-native-reanimated";
 
 export default function FlashcardForm() {
   const router = useRouter();
@@ -39,6 +48,7 @@ export default function FlashcardForm() {
   const [title, setTitle] = useState("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [formError, setFormError] = useState<string | null>(null); // NEW: Error state
 
   // Sync state for editing
   useEffect(() => {
@@ -62,9 +72,11 @@ export default function FlashcardForm() {
     if (loading) return;
 
     if (!title.trim() || !question.trim() || !answer.trim()) {
-      Alert.alert("Validation Error", "All fields are required.");
+      setFormError("All fields are required to save this flashcard.");
       return;
     }
+
+    setFormError(null);
 
     try {
       if (cardId) {
@@ -80,7 +92,7 @@ export default function FlashcardForm() {
       }
       router.back();
     } catch (err: any) {
-      Alert.alert("Error", err || "Something went wrong.");
+      setFormError(err || "Something went wrong while saving.");
     }
   };
 
@@ -97,7 +109,6 @@ export default function FlashcardForm() {
     <View className={`flex-1 ${bgColor}`}>
       <StatusBar style={darkMode ? "light" : "dark"} />
       
-      {/* Dynamic Background Glow */}
       <View className={`absolute top-[-50] left-[-50] w-96 h-96 rounded-full blur-3xl ${
         darkMode ? "bg-purple-900/15" : "bg-purple-100/40"
       }`} />
@@ -137,8 +148,22 @@ export default function FlashcardForm() {
 
           <ScrollView 
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 20 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 10 }}
           >
+            {/* ERROR MESSAGE DISPLAY */}
+            {formError && (
+              <Animated.View 
+                entering={FadeIn.duration(400)} 
+                className="flex-row items-center bg-red-500/10 p-4 rounded-2xl mb-6 border border-red-500/20"
+              >
+                <AlertCircle size={20} color="#EF4444" />
+                <Text className="text-red-500 text-sm font-bold ml-3 flex-1">{formError}</Text>
+                <Pressable onPress={() => setFormError(null)}>
+                  <X size={16} color="#EF4444" />
+                </Pressable>
+              </Animated.View>
+            )}
+
             {/* SET TITLE INPUT */}
             <Animated.View entering={FadeInUp.delay(200)} className="mb-6">
               <View className="flex-row items-center mb-3 ml-1">
@@ -147,10 +172,10 @@ export default function FlashcardForm() {
                   Set Title (e.g., Biology)
                 </Text>
               </View>
-              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 shadow-sm`}>
+              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 shadow-sm shadow-black/5`}>
                 <TextInput
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(val) => {setTitle(val); setFormError(null);}}
                   placeholder="Enter study set title..."
                   placeholderTextColor={placeholderColor}
                   className={`${primaryText} text-base font-bold`}
@@ -166,10 +191,10 @@ export default function FlashcardForm() {
                   Front Side (Question)
                 </Text>
               </View>
-              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 h-28 shadow-sm`}>
+              <View className={`${inputBg} border ${inputBorder} rounded-2xl px-5 py-4 h-28 shadow-sm shadow-black/5`}>
                 <TextInput
                   value={question}
-                  onChangeText={setQuestion}
+                  onChangeText={(val) => {setQuestion(val); setFormError(null);}}
                   placeholder="What is the question?"
                   placeholderTextColor={placeholderColor}
                   multiline
@@ -187,10 +212,10 @@ export default function FlashcardForm() {
                   Back Side (Answer)
                 </Text>
               </View>
-              <View className={`${inputBg} border ${inputBorder} rounded-[35px] px-6 py-6 h-48 shadow-sm`}>
+              <View className={`${inputBg} border ${inputBorder} rounded-[35px] px-6 py-6 h-48 shadow-sm shadow-black/5`}>
                 <TextInput
                   value={answer}
-                  onChangeText={setAnswer}
+                  onChangeText={(val) => {setAnswer(val); setFormError(null);}}
                   placeholder="Provide the detailed answer..."
                   placeholderTextColor={placeholderColor}
                   multiline
@@ -208,8 +233,8 @@ export default function FlashcardForm() {
                 className={`h-16 rounded-[25px] flex-row items-center justify-center shadow-lg ${
                   loading 
                     ? (darkMode ? "bg-gray-800" : "bg-gray-400") 
-                    : "bg-purple-600 shadow-purple-900/20"
-                }`}
+                    : (darkMode ? "bg-purple-600 shadow-purple-900/40" : "bg-purple-600 shadow-purple-200")
+                } active:scale-95`}
               >
                 {loading ? (
                   <ActivityIndicator color="white" />
