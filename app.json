@@ -20,6 +20,10 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
       "package": "com.gamitha_gimhana.aurora_mobile"
     },
     "web": {
@@ -48,7 +52,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "f7d33896-4abc-440b-bd45-2e57c6cc804a"
+        "projectId": "b4fd0019-adba-4946-aa4f-5e8ede540102"
       }
     }
   }
