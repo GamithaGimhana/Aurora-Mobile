@@ -4,7 +4,7 @@ A modern mobile application built with React Native and Expo, featuring note-tak
 
 ## 📺 Demo
 
-> [![Aurora Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+> [![Aurora Demo](https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/welcome_k1kho6.jpg)](https://youtu.be/mbUepC36zvU?si=K8Q_hJXNVJ-YJLaw)
 
 ## 📥 Download
 
