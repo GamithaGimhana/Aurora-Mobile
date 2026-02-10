@@ -4,7 +4,7 @@ A modern mobile application built with React Native and Expo, featuring note-tak
 
 ## 📺 Demo
 
-> [![Aurora Demo](https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/welcome_k1kho6.jpg)](https://youtu.be/mbUepC36zvU?si=K8Q_hJXNVJ-YJLaw)
+> [![Watch the Demo](https://img.shields.io/badge/Watch%20the%20Demo-Video-blue?style=for-the-badge)](https://youtu.be/mbUepC36zvU?si=K8Q_hJXNVJ-YJLaw)
 
 ## 📥 Download
 
@@ -20,20 +20,20 @@ Download the latest Android APK:
 
 ### 🎨 Welcome & Authentication
 
-| Welcome Screen | Login Screen |
-|:---:|:---:|
+|                                                         Welcome Screen                                                         |                                                        Login Screen                                                        |
+| :----------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
 | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/welcome_k1kho6.jpg" width="300" alt="Welcome Screen"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/login_jgvwoi.jpg" width="300" alt="Login Screen"/> |
 
 ### 📱 Main Features
 
-| Home | Notes | Flashcards |
-|:---:|:---:|:---:|
+|                                                           Home                                                           |                                                           Notes                                                            |                                                              Flashcards                                                              |
+| :----------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: |
 | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680515/home_zthmir.jpg" width="250" alt="Home Screen"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/notes_zqrwwh.jpg" width="250" alt="Notes Screen"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/flashcards_i5i9ro.jpg" width="250" alt="Flashcards Screen"/> |
 
 ### 🎯 Study Mode & Themes
 
-| Study Mode | Profile (Light) | Profile (Dark) |
-|:---:|:---:|:---:|
+|                                                          Study Mode                                                          |                                                             Profile (Light)                                                              |                                                             Profile (Dark)                                                             |
+| :--------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
 | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/studymode_qe656k.jpg" width="250" alt="Study Mode"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/profilelight_b3ty3c.jpg" width="250" alt="Profile Light Theme"/> | <img src="https://res.cloudinary.com/dg11uvapu/image/upload/v1770680514/profiledark_x94f90.jpg" width="250" alt="Profile Dark Theme"/> |
 
 </div>
