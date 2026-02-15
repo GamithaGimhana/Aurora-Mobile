@@ -4,8 +4,8 @@ const NotesLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // custom headers inside screens
-        contentStyle: { backgroundColor: '#0A0A0A' }, // match app bg to avoid flicker
+        headerShown: false, // custom header
+        contentStyle: { backgroundColor: '#0A0A0A' }, 
         animation: 'slide_from_right',
       }}
     >
@@ -15,7 +15,7 @@ const NotesLayout = () => {
         options={{ title: 'Notes' }}
       />
 
-      {/* 2. View Note (Drill-down) */}
+      {/* 2. View Note */}
       <Stack.Screen
         name="view"
         options={{
@@ -24,7 +24,7 @@ const NotesLayout = () => {
         }}
       />
 
-      {/* 3. Create / Edit Note (Modal) */}
+      {/* 3. Create / Edit Note */}
       <Stack.Screen
         name="form"
         options={{

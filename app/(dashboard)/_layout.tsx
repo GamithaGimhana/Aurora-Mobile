@@ -5,7 +5,7 @@ import { View } from "react-native";
 
 export default function DashboardLayout() {
   const { user, loading } = useAppSelector(state => state.auth);
-  const { darkMode } = useAppSelector(state => state.theme); // Consuming theme state
+  const { darkMode } = useAppSelector(state => state.theme); 
 
   if (loading) return null;
 
@@ -18,7 +18,7 @@ export default function DashboardLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: darkMode ? "#0A0A0A" : "#FFFFFF", // Contextual background
+          backgroundColor: darkMode ? "#0A0A0A" : "#FFFFFF", 
           borderTopWidth: darkMode ? 0 : 1,
           borderTopColor: "#F3F4F6",
           elevation: 0,

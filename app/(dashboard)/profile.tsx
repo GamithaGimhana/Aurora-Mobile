@@ -75,7 +75,7 @@ export default function Profile() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null); // NEW: Error state
+  const [formError, setFormError] = useState<string | null>(null); 
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/(auth)/login");

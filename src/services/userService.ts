@@ -10,7 +10,7 @@ import { db } from "./firebase"
 import { UserProfile } from "@/src/types/user"
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth"
 
-// Get current user's profile
+// Get current user profile
 export const getCurrentUserProfile = async (): Promise<UserProfile> => {
   const user = auth.currentUser
   if (!user) throw new Error("User not authenticated")
@@ -23,7 +23,7 @@ export const getCurrentUserProfile = async (): Promise<UserProfile> => {
   return snap.data() as UserProfile
 }
 
-// Create user profile (safe to call again)
+// Create user profile 
 export const createUserProfile = async (
   uid: string,
   name: string,

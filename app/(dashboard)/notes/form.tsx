@@ -38,7 +38,7 @@ export default function NoteForm() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [formError, setFormError] = useState<string | null>(null); // NEW: Error state
+  const [formError, setFormError] = useState<string | null>(null); 
 
   // Sync state with note data for editing
   useEffect(() => {

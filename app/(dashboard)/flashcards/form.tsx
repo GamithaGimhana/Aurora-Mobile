@@ -48,7 +48,7 @@ export default function FlashcardForm() {
   const [title, setTitle] = useState("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [formError, setFormError] = useState<string | null>(null); // NEW: Error state
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Sync state for editing
   useEffect(() => {

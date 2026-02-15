@@ -29,7 +29,7 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState<string | null>(null); // NEW: Error state
+  const [loginError, setLoginError] = useState<string | null>(null); 
 
   const handleLogin = async () => {
     // Reset error at start of new attempt

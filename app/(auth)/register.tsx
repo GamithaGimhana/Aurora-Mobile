@@ -31,7 +31,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [regError, setRegError] = useState<string | null>(null); // NEW: Error state
+  const [regError, setRegError] = useState<string | null>(null); 
 
   const handleRegister = async () => {
     setRegError(null);

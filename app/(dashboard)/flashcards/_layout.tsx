@@ -15,17 +15,17 @@ const FlashcardsLayout = () => {
         options={{ title: 'Flashcards' }}
       />
 
-      {/* 2. Study Mode (Focused experience) */}
+      {/* 2. Study Mode */}
       <Stack.Screen
         name="study"
         options={{
           title: 'Study',
           animation: 'slide_from_right',
-          gestureEnabled: false, // optional: prevents accidental swipe-back
+          gestureEnabled: false, // prevents accidental swipe-back
         }}
       />
 
-      {/* 3. Create / Edit Flashcard (Modal) */}
+      {/* 3. Create / Edit Flashcard */}
       <Stack.Screen
         name="form"
         options={{

@@ -25,7 +25,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { SkeletonCard } from "@/src/components/SkeletonLoader"; // Assuming path based on previous recommendation
+import { SkeletonCard } from "@/src/components/SkeletonLoader"; 
 
 export default function NotesIndex() {
   const router = useRouter();

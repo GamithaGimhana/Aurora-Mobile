@@ -31,7 +31,7 @@ export default function Welcome() {
     <View className="flex-1 bg-[#FAFAFA]">
       <StatusBar style="dark" />
       
-      {/* Background Glow Effect - Adjusted for Light Mode */}
+      {/* Background Glow */}
       <View className="absolute top-[-50] right-[-50] w-96 h-96 bg-purple-200/40 rounded-full blur-3xl" />
       
       <SafeAreaView className="flex-1 px-8 justify-between pb-10">
